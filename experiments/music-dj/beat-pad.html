@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Beat Pad</title>
+<style>
+  html, body {
+    margin: 0;
+    background: #0e0e10;
+    color: #f2f2f2;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+    user-select: none;
+  }
+  .pad {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    padding: 18px;
+    max-width: 920px;
+    margin: 0 auto;
+  }
+  .key {
+    aspect-ratio: 1 / 1;
+    border-radius: 16px;
+    border: 1px solid #2a2a2e;
+    background:
+      radial-gradient(circle at 30% 30%, rgba(255,255,255,0.04), rgba(0,0,0,0)),
+      linear-gradient(180deg, #1c1c21, #111114);
+    color: #ffffff;
+    font-size: 22px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: transform 80ms ease, border-color 120ms ease, background 120ms ease;
+  }
+  .key:active, .key.active {
+    transform: translateY(2px) scale(0.98);
+    border-color: #ffd866;
+    background:
+      radial-gradient(circle at 30% 30%, rgba(255,255,255,0.08), rgba(0,0,0,0)),
+      linear-gradient(180deg, #2a2a32, #15151a);
+    box-shadow: inset 0 0 0 1px rgba(255, 216, 102, 0.15), 0 10px 30px rgba(0, 0, 0, 0.45);
+  }
+  .key .shortcut {
+    font-size: 12px;
+    font-weight: 500;
+    color: #9aa0a6;
+    letter-spacing: 0.08em;
+  }
+  .top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 18px 6px;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .top-bar h1 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #e9e9eb;
+  }
+  .controls {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+  }
+  label {
+    font-size: 12px;
+    color: #cfcfd1;
+  }
+  input[type="range"] {
+    accent-color: #ffd866;
+  }
+  .tip {
+    text-align: center;
+    padding: 8px 12px 18px;
+    font-size: 13px;
+    color: #9aa0a6;
+  }
+</style>
+</head>
+<body>
+  <div class="top-bar">
+    <h1>Beat Pad</h1>
+    <div class="controls">
+      <label>Vol <input id="volume" type="range" min="0" max="100" value="75"></label>
+      <button id="clear">Clear</button>
+    </div>
+  </div>
+
+  <div class="pad" id="pad"></div>
+  <div class="tip">Use keyboard keys A S D F G H J K L ; or click/tap the pads.</div>
+
+  <script>
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    const ctx = new AudioContext();
+    const volume = document.getElementById("volume");
+    const clearBtn = document.getElementById("clear");
+    const pad = document.getElementById("pad");
+
+    const keys = [
+      { label: "Kick",  key: "a", note: 60 },
+      { label: "Snare", key: "s", note: 62 },
+      { label: "Clap",  key: "d", note: 64 },
+      { label: "Hat",   key: "f", note: 65 },
+      { label: "Tom 1", key: "g", note: 67 },
+      { label: "Tom 2", key: "h", note: 69 },
+      { label: "Cym",   key: "j", note: 71 },
+      { label: "Perc",  key: "k", note: 72 },
+      { label: "Sub",   key: "l", note: 74 },
+      { label: "FX 1",  key: ";", note: 76 },
+    ];
+
+    const els = new Map();
+
+    function dbFromSlider() {
+      const v = Number(volume.value) / 100;
+      return v === 0 ? -Infinity : 20 * Math.log10(v);
+    }
+
+    function playTone(freq = 440, type = "sine") {
+      if (ctx.state === "suspended") ctx.resume();
+      const t = ctx.currentTime;
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.type = type;
+      o.frequency.setValueAtTime(freq, t);
+      g.gain.setValueAtTime(1, t);
+      g.gain.exponentialRampToValueAtTime(0.001, t + 0.42);
+      o.connect(g);
+      g.connect(ctx.destination);
+      o.start(t);
+      o.stop(t + 0.45);
+    }
+
+    function drumSound(name) {
+      const t = ctx.currentTime;
+      const gain = ctx.createGain();
+      gain.gain.setValueAtTime(1, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+      gain.connect(ctx.destination);
+
+      if (name === "Kick") {
+        const o = ctx.createOscillator();
+        o.type = "sine";
+        o.frequency.setValueAtTime(160, t);
+        o.frequency.exponentialRampToValueAtTime(35, t + 0.25);
+        o.connect(gain);
+        o.start(t);
+        o.stop(t + 0.35);
+        return;
+      }
+
+      if (name === "Snare") {
+        const o = ctx.createOscillator();
+        o.type = "triangle";
+        o.frequency.setValueAtTime(180, t);
+        o.frequency.exponentialRampToValueAtTime(100, t + 0.08);
+        o.connect(gain);
+        o.start(t); o.stop(t + 0.12);
+        const n = ctx.createBufferSource();
+        const buf = ctx.createBuffer(1, ctx.sampleRate * 0.2, ctx.sampleRate);
+        const data = buf.getChannelData(0);
+        for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+        n.buffer = buf;
+        const ng = ctx.createGain();
+        ng.gain.setValueAtTime(0.7, t);
+        ng.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+        n.connect(ng);
+        ng.connect(ctx.destination);
+        n.start(t);
+        return;
+      }
+
+      playTone(
+        { Hat: 2200, Clap: 1100, "Tom 1": 180, "Tom 2": 140, Cym: 3500, Perc: 260, Sub: 55, "FX 1": 900 }[name] || 400,
+        { Hat: "square", Clap: "sawtooth", "Tom 1": "triangle", "Tom 2": "triangle", Cym: "square", Perc: "triangle", Sub: "sine", "FX 1": "sawtooth" }[name] || "sine"
+      );
+    }
+
+    function activate(item) {
+      if (ctx.state === "suspended") ctx.resume();
+      const el = els.get(item.key);
+      el.classList.add("active");
+      const g = ctx.createGain();
+      g.gain.value = Number(volume.value) / 100;
+      const t = ctx.currentTime;
+      drumSound(item.label);
+      setTimeout(() => el.classList.remove("active"), 110);
+    }
+
+    keys.forEach((item) => {
+      const el = document.createElement("div");
+      el.className = "key";
+      el.innerHTML = `<div>${item.label}</div><div class="shortcut">${(item.key.toUpperCase())}</div>`;
+      el.addEventListener("pointerdown", () => activate(item));
+      pad.appendChild(el);
+      els.set(item.key, el);
+    });
+
+    window.addEventListener("keydown", (e) => {
+      const key = e.key.toLowerCase();
+      if (els.has(key)) {
+        e.preventDefault();
+        activate(keys.find(k => k.key === key));
+      }
+    });
+
+    clearBtn.addEventListener("click", () => {
+      els.forEach((el) => el.classList.remove("active"));
+    });
+  </script>
+</body>
+</html>

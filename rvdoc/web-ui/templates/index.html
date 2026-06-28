@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>RVDoc – Home</title>
+  <style>
+    body {font-family: Arial, sans-serif; margin: 2em;}
+    a {display: block; margin: 0.5em 0; font-size: 1.2em;}
+  </style>
+</head>
+<body>
+  <h1>RVDoc – Main Menu</h1>
+  <a href="{{ url_for('diagnostic') }}">🔧 Diagnostic Mode</a>
+  <a href="{{ url_for('pdi') }}">✅ PDI Mode</a>
+  <div style="margin-top:1.5em;">
+    <p>Scan this QR code with your phone to open RVDoc instantly:</p>
+    <img id="qr" alt="QR code" style="border:1px solid #ccc;"/>
+  </div>
+  <script>
+    // Build the URL of this page (including host and port) and generate a QR code via a free API
+    const host = window.location.host;
+    const url = `http://${host}`;
+    const qrImg = document.getElementById('qr');
+    qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(url)}`;
+  </script>
+</body>
+</html>

@@ -1,0 +1,227 @@
+{
+  "metadata": {
+    "total_businesses": 20,
+    "target_market": "Small service businesses overwhelmed by customer emails",
+    "ideal_profile": "Active online presence, minimal automation, high email volume",
+    "collection_date": "2026-06-23",
+    "strategy_fit": "Foot-in-the-Door - AI email automation for customer inquiries"
+  },
+  "businesses": [
+    {
+      "business_name": "Peanut Plumbing",
+      "industry": "Plumbing",
+      "location": "Austin TX",
+      "website": "https://www.peanutplumbingtx.com/",
+      "email": "N/A",
+      "phone_number": "(512) 924-7989",
+      "notes": "Local Austin plumber, active website, good target for appointment/inquiry automation"
+    },
+    {
+      "business_name": "Mr. Rooter Plumbing of Austin",
+      "industry": "Plumbing",
+      "location": "Austin TX",
+      "website": "https://www.mrrooter.com/austin/",
+      "email": "N/A",
+      "phone_number": "(512) 298-4916",
+      "notes": "Franchise with local presence, high customer contact volume"
+    },
+    {
+      "business_name": "My Austin Plumber LLC",
+      "industry": "Plumbing",
+      "location": "Austin TX",
+      "website": "https://myaustinplumberllc.com/",
+      "email": "N/A",
+      "phone_number": "N/A",
+      "notes": "Independent local plumber, website present but minimal contact info exposed"
+    },
+    {
+      "business_name": "USA Handyman Services",
+      "industry": "Handyman",
+      "location": "Accokeek MD",
+      "website": "https://usahandymanservices.us/",
+      "email": "usahandymanservicesllc@gmail.com",
+      "phone_number": "(703) 953-6825",
+      "notes": "Good email contact available, likely receives high volume of service requests"
+    },
+    {
+      "business_name": "Honest Handyman Service",
+      "industry": "Handyman",
+      "location": "Phoenix AZ",
+      "website": "https://www.honesthandymanservice.com/",
+      "email": "David@honesthandymanservice.com",
+      "phone_number": "(602) 751-2471",
+      "notes": "Owner-operator with website, direct email contact available"
+    },
+    {
+      "business_name": "Volt Tech Electric",
+      "industry": "Electrical",
+      "location": "Riverside CA",
+      "website": "https://www.volttechelectric.com/",
+      "email": "N/A",
+      "phone_number": "(951) 515-4852",
+      "notes": "Local electrician, website active but limited email automation visible"
+    },
+    {
+      "business_name": "Spring Klein Pet Salon LLC",
+      "industry": "Pet Grooming",
+      "location": "Spring/Woodlands/Tomball TX",
+      "website": "https://springkleinpetsalon.com/",
+      "email": "skps@att.net",
+      "phone_number": "(281) 251-6116",
+      "notes": "30+ years experience, multi-location, email available for inquiries"
+    },
+    {
+      "business_name": "Epic Pets Salon",
+      "industry": "Pet Grooming",
+      "location": "Marietta GA",
+      "website": "https://www.epicpetssalon.com/",
+      "email": "epicpetssalon@gmail.com",
+      "phone_number": "(770) 694-1999",
+      "notes": "Owner-operator, 25+ years experience, good email contact"
+    },
+    {
+      "business_name": "Benson Orthodontics",
+      "industry": "Orthodontistry",
+      "location": "Denver CO",
+      "website": "https://www.bensonortho.com/",
+      "email": "N/A",
+      "phone_number": "(303) 722-8976",
+      "notes": "Top-rated practice, voted best orthodontist, high patient inquiry volume"
+    },
+    {
+      "business_name": "Nestman Orthodontics",
+      "industry": "Orthodontistry",
+      "location": "Denver CO",
+      "website": "https://www.nestmanortho.com/",
+      "email": "N/A",
+      "phone_number": "(303) 399-8989",
+      "notes": "Quality orthodontic care provider, appointment scheduling likely manual"
+    },
+    {
+      "business_name": "Daniel Dentistry",
+      "industry": "Dentistry",
+      "location": "Miami FL",
+      "website": "https://www.danieldentistry.com/",
+      "email": "N/A",
+      "phone_number": "(305) 677-0042",
+      "notes": "Full-service dental practice, likely high patient inquiry volume"
+    },
+    {
+      "business_name": "Bayfront Dental",
+      "industry": "Dentistry",
+      "location": "Miami FL",
+      "website": "https://www.bayfrontdental.com/",
+      "email": "N/A",
+      "phone_number": "(305) 530-1866",
+      "notes": "Downtown Miami location, specializing in dental implants"
+    },
+    {
+      "business_name": "Midtown Dental",
+      "industry": "Dentistry",
+      "location": "Miami FL",
+      "website": "https://www.midtowndentalmiami.com/",
+      "email": "info@midtowndentalmiami.com",
+      "phone_number": "(305) 598-6070",
+      "notes": "Email available, likely receives daily patient inquiries"
+    },
+    {
+      "business_name": "Denver's Best Heating and AC Repair",
+      "industry": "HVAC",
+      "location": "Denver CO",
+      "website": "https://www.denversbestheatingandacrepair.com/",
+      "email": "info@denversbestheatingandacrepair.com",
+      "phone_number": "(303) 327-9208",
+      "notes": "24/7 emergency service, receives emergency inquiries constantly"
+    },
+    {
+      "business_name": "Fitness at Five",
+      "industry": "Personal Training",
+      "location": "Athens GA",
+      "website": "https://www.fitnessatfive.com/",
+      "email": "tgasparro@gmail.com",
+      "phone_number": "(678) 223-5268",
+      "notes": "Fitness center with trainers, handles booking requests and inquiries"
+    },
+    {
+      "business_name": "Westcoe Realtors",
+      "industry": "Real Estate",
+      "location": "Riverside CA",
+      "website": "https://westcoerealtors.com/",
+      "email": "N/A",
+      "phone_number": "(951) 784-2500",
+      "notes": "#1 independent brokerage, high customer inquiry volume"
+    },
+    {
+      "business_name": "Chignon Hair Salon",
+      "industry": "Hair Salon",
+      "location": "Pasadena CA",
+      "website": "https://chignonsalon.com/",
+      "email": "N/A",
+      "phone_number": "(626) 683-3724",
+      "notes": "Award-winning salon, 25+ years, high appointment and inquiry volume"
+    },
+    {
+      "business_name": "The Look Hair Salon",
+      "industry": "Hair Salon",
+      "location": "Glendale CA",
+      "website": "https://www.thelookhairsalonla.com/",
+      "email": "thelook_hairsalon@yahoo.com",
+      "phone_number": "(818) 662-5665",
+      "notes": "25+ years experience, active website with contact email"
+    },
+    {
+      "business_name": "Baker Ranch Animal Hospital",
+      "industry": "Veterinary",
+      "location": "Lake Forest CA",
+      "website": "https://www.bakerranchanimalhospital.com/",
+      "email": "info@bakerranchanimalhospital.com",
+      "phone_number": "N/A",
+      "notes": "Top-rated family-owned clinic, handles appointment requests and medical inquiries"
+    },
+    {
+      "business_name": "Southpaw Vets",
+      "industry": "Veterinary",
+      "location": "Sherman Oaks CA",
+      "website": "https://southpawvets.la/",
+      "email": "hello@southpawvets.la",
+      "phone_number": "(818) 935-5444",
+      "notes": "Modern neighborhood vet, actively handles online inquiries and bookings"
+    }
+  ],
+  "industry_breakdown": {
+    "Plumbing": 3,
+    "Handyman": 2,
+    "Electrical": 1,
+    "Pet Grooming": 2,
+    "Orthodontistry": 2,
+    "Dentistry": 3,
+    "HVAC": 1,
+    "Personal Training": 1,
+    "Real Estate": 1,
+    "Hair Salon": 2,
+    "Veterinary": 2
+  },
+  "automation_opportunities": {
+    "appointment_scheduling": [
+      "Dental offices",
+      "Orthodontistry practices",
+      "Hair salons",
+      "Veterinary clinics",
+      "Personal training",
+      "Pet grooming"
+    ],
+    "service_inquiries": [
+      "Plumbers",
+      "Electricians",
+      "HVAC contractors",
+      "Handymen"
+    ],
+    "lead_qualification": [
+      "Real estate agents",
+      "All service categories"
+    ],
+    "customer_support": [
+      "All businesses"
+    ]
+  }
+}

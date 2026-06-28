@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grandmaster Chess - Professional Edition</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.13.4/chess.min.js"></script>
+    <script src="pieces.js"></script>
+    <style>
+        :root {
+            --bg-color: #1a1a1a;
+            --sidebar-bg: #252525;
+            --accent-color: #d4af37; /* Gold */
+            --text-color: #e0e0e0;
+            --board-light: #ebecd0;
+            --board-dark: #779556;
+            --highlight-move: rgba(255, 255, 0, 0.5);
+            --highlight-legal: rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .game-container {
+            display: flex;
+            gap: 30px;
+            padding: 20px;
+            background-color: var(--sidebar-bg);
+            border-radius: 12px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            border: 1px solid #333;
+        }
+
+        .board-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        #board {
+            display: grid;
+            grid-template-columns: repeat(8, 60px);
+            grid-template-rows: repeat(8, 60px);
+            border: 8px solid #333;
+            border-radius: 4px;
+            user-select: none;
+        }
+
+        .square {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .square.light { background-color: var(--board-light); }
+        .square.dark { background-color: var(--board-dark); }
+
+        .piece {
+            width: 50px;
+            height: 50px;
+            cursor: grab;
+            z-index: 2;
+            transition: transform 0.1s ease;
+        }
+
+        .piece:active { cursor: grabbing; }
+
+        .highlight-last-move {
+            background-color: var(--highlight-move) !important;
+        }
+
+        .legal-dot {
+            width: 15px;
+            height: 15px;
+            background-color: var(--highlight-legal);
+            border-radius: 50%;
+            position: absolute;
+            z-index: 1;
+        }
+
+        .sidebar {
+            width: 300px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            border-left: 1px solid #444;
+            padding-left: 30px;
+        }
+
+        .status-banner {
+            padding: 15px;
+            background-color: #333;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+            border: 1px solid var(--accent-color);
+            color: var(--accent-color);
+        }
+
+        .history-panel {
+            flex: 1;
+            background-color: #1e1e1e;
+            border-radius: 8px;
+            padding: 15px;
+            overflow-y: auto;
+            font-family: 'Courier New', Courier, monospace;
+            border: 1px solid #444;
+            max-height: 400px;
+        }
+
+        .history-move {
+            display: grid;
+            grid-template-columns: 40px 1fr 1fr;
+            gap: 10px;
+            padding: 5px 0;
+            border-bottom: 1px solid #333;
+        }
+
+        .history-move:nth-child(even) {
+            background-color: #252525;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: var(--accent-color);
+            color: #1a1a1a;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <div class="board-section">
+            <div id="board"></div>
+            <div class="controls">
+                <button id="new-game-btn">New Game</button>
+            </div>
+        </div>
+        <div class="sidebar">
+            <div id="status" class="status-banner">White's Turn</div>
+            <div id="history" class="history-panel">
+                <!-- Moves will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

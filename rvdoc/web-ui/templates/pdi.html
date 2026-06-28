@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>RVDoc – PDI Mode</title>
+  <style>
+    body {font-family: Arial, sans-serif; margin: 2em;}
+    .flash {color: green; margin-bottom: 1em;}
+    button {font-size: 1em; padding: 0.5em;}
+    select {font-size: 1em; padding: 0.3em;}
+  </style>
+</head>
+<body>
+  <h1>PDI Mode – {{ section }}</h1>
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <div class="flash">{{ messages[0] }}</div>
+    {% endif %}
+  {% endwith %}
+  <form method="post">
+    <input type="hidden" name="section" value="{{ section }}" />
+    <input type="hidden" name="item" value="{{ item }}" />
+    <p><strong>Check:</strong> {{ item }}</p>
+    <label>
+      <input type="radio" name="status" value="p" required /> Pass (P)
+    </label><br/>
+    <label>
+      <input type="radio" name="status" value="f" /> Fail (F)
+    </label><br/>
+    <label>
+      <input type="radio" name="status" value="s" /> Skip (S)
+    </label><br/><br/>
+    <button type="submit">Record</button>
+  </form>
+  <br>
+  <a href="{{ url_for('index') }}">&larr; Back to Main Menu</a>
+</body>
+</html>

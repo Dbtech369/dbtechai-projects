@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>RVDoc – PDI Summary</title>
+  <style>
+    body {font-family: Arial, sans-serif; margin: 2em;}
+    .section {margin-bottom: 1.5em;}
+    .item {margin-left: 1em;}
+    button {font-size: 1em; padding: 0.5em;}
+    .flash {color: green; margin-bottom: 1em;}
+  </style>
+</head>
+<body>
+  <h1>PDI Summary</h1>
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <div class="flash">{{ messages[0] }}</div>
+    {% endif %}
+  {% endwith %}
+  {% for sec, items in report.items() %}
+    <div class="section">
+      <h2>{{ sec }}</h2>
+      {% for itm, res in items.items() %}
+        <div class="item">{{ res }} : {{ itm }}</div>
+      {% endfor %}
+    </div>
+  {% endfor %}
+  <form method="post">
+    <button type="submit">Save Report to Disk</button>
+  </form>
+  <br>
+  <a href="{{ url_for('index') }}">&larr; Back to Main Menu</a>
+</body>
+</html>

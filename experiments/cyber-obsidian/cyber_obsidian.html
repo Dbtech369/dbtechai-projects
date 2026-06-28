@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cyber-Obsidian: Gemini vs Hermes</title>
+  <script>p5.disableFriendlyErrors = true;</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.3/p5.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.3/addons/p5.sound.min.js"></script>
+  <style>
+    html, body { margin: 0; padding: 0; overflow: hidden; background: #0a0a0f; }
+    canvas { display: block; }
+    #ui { position: fixed; top: 20px; left: 20px; z-index: 10; color: #e8d5b7; font-family: 'JetBrains Mono', monospace; font-size: 14px; line-height: 1.6; pointer-events: none; }
+    #ui h1 { margin: 0 0 8px; font-size: 22px; font-weight: 600; background: linear-gradient(90deg, #00ffff, #ffffff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    #move-list { max-height: 400px; overflow-y: auto; font-size: 12px; opacity: 0.8; }
+    .move-pair { display: flex; gap: 12px; }
+    .move-num { color: #00ffff; min-width: 30px; }
+    .move-white { color: #ffffff; }
+    .move-black { color: #aaaaaa; }
+    #status { position: fixed; bottom: 20px; left: 20px; z-index: 10; color: #e8d5b7; font-family: 'JetBrains Mono', monospace; font-size: 14px; }
+    #controls { position: fixed; top: 20px; right: 20px; z-index: 10; display: flex; gap: 8px; }
+    button { background: rgba(0, 255, 255, 0.1); border: 1px solid #00ffff; color: #00ffff; padding: 8px 16px; font-family: 'JetBrains Mono', monospace; font-size: 12px; cursor: pointer; border-radius: 4px; transition: all 0.2s; }
+    button:hover { background: #00ffff; color: #0a0a0f; }
+    button:disabled { opacity: 0.4; cursor: not-allowed; }
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap');
+  </style>
+</head>
+<body>
+<div id="ui">
+  <h1>CYBER-OBSIDIAN</h1>
+  <div>GEMINI-EVOLVED (White) vs HERMES-LEGACY (Black)</div>
+  <div id="move-list"></div>
+</div>
+<div id="status">Initializing board...</div>
+<div id="controls">
+  <button id="prev">◀ Prev</button>
+  <button id="play">▶ Play</button>
+  <button id="pause">⏸ Pause</button>
+  <button id="next">Next ▶</button>
+  <button id="export">Export PNG</button>
+</div>
+<script>
+
+// ===== GAME DATA =====
+const MOVES = [
+  {white: "e4", black: "c5", san: "1. e4 c5", comment: "The Sicilian Defense."},
+  {white: "Nf3", black: "d6", san: "2. Nf3 d6", comment: "Building a flexible structure."},
+  {white: "d4", black: "cxd4", san: "3. d4 cxd4", comment: "Trade made. C-file opened."},
+  {white: "Nxd4", black: "Nf6", san: "4. Nxd4 Nf6", comment: "Pressure on e4."},
+  {white: "Nc3", black: "a6", san: "5. Nc3 a6", comment: "Najdorf poison."},
+  {white: "Be3", black: "e5", san: "6. Be3 e5", comment: "Claiming center space."},
+  {white: "Nde2", black: "Be7", san: "7. Nde2 Be7", comment: "Development continues."},
+  {white: "f3", black: "0-0", san: "8. f3 0-0", comment: "White solidifies, Black castles."},
+  {white: "Be2", black: "Nbd7", san: "9. Be2 Nbd7", comment: "Black completes development."},
+  {white: "0-0", black: "b5", san: "10. 0-0 b5", comment: "Queenside expansion begins."},
+  {white: "a3", black: "Rc8", san: "11. a3 Rc8", comment: "Rook to open file."},
+  {white: "Qd2", black: "b4", san: "12. Qd2 b4", comment: "Black pushes, knight attacked."},
+  {white: "axb4", black: "axb4", san: "13. axb4 axb4", comment: "Pawn trade, a-file open."},
+  {white: "Nb5", black: "Nb6", san: "14. Nb5 Nb6", comment: "Knight neutralized."},
+  {white: "f4", black: "exf4", san: "15. f4 exf4", comment: "Center opens."},
+  {white: "Bxf4", black: "d5", san: "16. Bxf4 d5", comment: "Counter-strike! d5 break."},
+  {white: "exd5", black: "Nxd5", san: "17. exd5 Nxd5", comment: "Monster knight on d5."},
+  {white: "Bg3", black: "h5", san: "18. Bg3 h5", comment: "h-pawn storm begins."},
+  {white: "Nxb6", black: "axb6", san: "19. Nxb6 axb6", comment: "Knight trade on b6."},
+  {white: "Bxf6", black: null, san: "20. Bxf6", comment: "ILLEGAL - no piece on f6!"},
+  {white: "Bh2", black: null, san: "21. Bh2", comment: "Corrected: bishop retreats."},
+];
+
+// ===== CONFIG =====
+const CONFIG = {
+  seed: 42,
+  boardSize: 8,
+  animationSpeed: 1.0,
+  autoPlay: false,
+  currentMove: 0,
+  playing: false,
+  playInterval: null,
+};
+
+// ===== PALETTE =====
+const PALETTE = {
+  bg: '#0a0a0f',
+  darkSquare: '#0a1a2a',
+  lightSquare: '#102030',
+  darkGlow: '#00ffff',
+  lightGlow: '#ffffff',
+  gridLines: '#003344',
+  whitePiece: '#ffffff',
+  blackPiece: '#00ffff',
+  whiteGlow: '#ffffff',
+  blackGlow: '#00ffff',
+  trailWhite: 'rgba(255,255,255,0.15)',
+  trailBlack: 'rgba(0,255,255,0.15)',
+  highlight: '#ffaa00',
+  checkmate: '#ff0044',
+  text: '#e8d5b7',
+  textDim: '#668899',
+};
+
+// ===== PIECE DEFINITIONS =====
+const PIECE_SYMBOLS = {
+  'K': {white: '♔', black: '♚'},
+  'Q': {white: '♕', black: '♛'},
+  'R': {white: '♖', black: '♜'},
+  'B': {white: '♗', black: '♝'},
+  'N': {white: '♘', black: '♞'},
+  'P': {white: '♙', black: '♟'},
+};
+
+const PIECE_MESH = {
+  'K': {type: 'crown', radius: 0.42, height: 1.0, details: 8},
+  'Q': {type: 'crown', radius: 0.38, height: 0.9, details: 6},
+  'R': {type: 'tower', radius: 0.35, height: 0.85, details: 4},
+  'B': {type: 'mitre', radius: 0.32, height: 0.88, details: 2},
+  'N': {type: 'horse', radius: 0.33, height: 0.82, details: 0},
+  'P': {type: 'pawn', radius: 0.26, height: 0.55, details: 0},
+};
+
+
+// ===== STATE =====
+let board = [];
+let pieces = [];
+let squareSize = 0;
+let boardOffset = {x: 0, y: 0};
+let cameraAngle = 0;
+let cameraTargetAngle = 0;
+let cameraDistance = 0;
+let particleSystems = [];
+let moveAnimations = [];
+let glowPulse = 0;
+let lastMoveTime = 0;
+let selectedSquare = null;
+let hoveredSquare = null;
+let trailLayer, glowLayer, boardLayer, pieceLayer;
+let fontRegular, fontBold;
+
+function preload() {
+  fontRegular = loadFont('https://fonts.gstatic.com/s/jetbrainsmono/v23/tDbY2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKxVLvMO5Rc.woff2');
+  fontBold = loadFont('https://fonts.gstatic.com/s/jetbrainsmono/v23/tDbY2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKxVLvMO5Rc.woff2');
+}
+
+function setup() {
+  createCanvas(windowWidth, windowHeight, WEBGL);
+  pixelDensity(1);
+  colorMode(HSB, 360, 100, 100, 100);
+  
+  // Offscreen buffers
+  trailLayer = createGraphics(width, height, WEBGL);
+  trailLayer.pixelDensity(1);
+  trailLayer.colorMode(HSB, 360, 100, 100, 100);
+  
+  glowLayer = createGraphics(width, height, WEBGL);
+  glowLayer.pixelDensity(1);
+  glowLayer.colorMode(HSB, 360, 100, 100, 100);
+  
+  boardLayer = createGraphics(width, height, WEBGL);
+  boardLayer.pixelDensity(1);
+  boardLayer.colorMode(HSB, 360, 100, 100, 100);
+  
+  pieceLayer = createGraphics(width, height, WEBGL);
+  pieceLayer.pixelDensity(1);
+  pieceLayer.colorMode(HSB, 360, 100, 100, 100);
+  
+  initBoard();
+  initPieces();
+  renderStaticBoard();
+  updateMoveListUI();
+  
+  // UI bindings
+  select('#prev').mousePressed(() => stepMove(-1));
+  select('#next').mousePressed(() => stepMove(1));
+  select('#play').mousePressed(startAutoPlay);
+  select('#pause').mousePressed(stopAutoPlay);
+  select('#export').mousePressed(() => saveCanvas('cyber-obsidian', 'png'));
+  
+  window._p5Ready = true;
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+  trailLayer.resizeCanvas(width, height);
+  glowLayer.resizeCanvas(width, height);
+  boardLayer.resizeCanvas(width, height);
+  pieceLayer.resizeCanvas(width, height);
+  initBoard();
+  initPieces();
+  renderStaticBoard();
+}
+
+function initBoard() {
+  const minDim = min(width, height);
+  squareSize = minDim / 10;
+  boardOffset.x = -(squareSize * 4);
+  boardOffset.y = -(squareSize * 4);
+  cameraDistance = minDim * 1.2;
+}
+
+function initPieces() {
+  pieces = [];
+  // Standard chess starting position
+  const setup = [
+    ['R','N','B','Q','K','B','N','R'],
+    ['P','P','P','P','P','P','P','P'],
+    [null,null,null,null,null,null,null,null],
+    [null,null,null,null,null,null,null,null],
+    [null,null,null,null,null,null,null,null],
+    [null,null,null,null,null,null,null,null],
+    ['p','p','p','p','p','p','p','p'],
+    ['r','n','b','q','k','b','n','r'],
+  ];
+  
+  for (let rank = 0; rank < 8; rank++) {
+    for (let file = 0; file < 8; file++) {
+      const pieceChar = setup[rank][file];
+      if (pieceChar) {
+        const isWhite = pieceChar === pieceChar.toUpperCase();
+        const type = pieceChar.toUpperCase();
+        pieces.push(new Piece(type, file, rank, isWhite));
+      }
+    }
+  }
+  // Set initial positions instantly
+  for (let p of pieces) {
+    p.x = p.targetX;
+    p.y = p.targetY;
+    p.z = p.targetZ;
+  }
+}
+
+function renderStaticBoard() {
+  boardLayer.background(PALETTE.bg);
+  boardLayer.push();
+  boardLayer.translate(boardOffset.x, boardOffset.y, -50);
+  
+  // Grid lines
+  boardLayer.strokeWeight(1);
+  boardLayer.strokeColor(color(200, 50, 20, 30)); // cyan-ish dark
+  
+  for (let i = 0; i <= 8; i++) {
+    boardLayer.line(i * squareSize, 0, i * squareSize, 8 * squareSize);
+    boardLayer.line(0, i * squareSize, 8 * squareSize, i * squareSize);
+  }
+  
+  // Square glow etching
+  for (let rank = 0; rank < 8; rank++) {
+    for (let file = 0; file < 8; file++) {
+      const isLight = (file + rank) % 2 === 0;
+      const x = file * squareSize + squareSize/2;
+      const y = rank * squareSize + squareSize/2;
+      
+      // Circuit etching effect
+      boardLayer.push();
+      boardLayer.translate(x, y, 1);
+      boardLayer.noFill();
+      boardLayer.strokeWeight(0.5);
+      const glowCol = isLight ? 
+        color(0, 0, 100, 15) : 
+        color(180, 100, 100, 25);
+      boardLayer.stroke(glowCol);
+      
+      // Inner square circuit
+      const s = squareSize * 0.6;
+      boardLayer.rect(-s/2, -s/2, s, s, 4);
+      
+      // Corner brackets
+      const b = s/2;
+      const bracketSize = s * 0.15;
+      boardLayer.line(-b, -b, -b + bracketSize, -b);
+      boardLayer.line(-b, -b, -b, -b + bracketSize);
+      boardLayer.line(b, -b, b - bracketSize, -b);
+      boardLayer.line(b, -b, b, -b + bracketSize);
+      boardLayer.line(-b, b, -b + bracketSize, b);
+      boardLayer.line(-b, b, -b, b - bracketSize);
+      boardLayer.line(b, b, b - bracketSize, b);
+      boardLayer.line(b, b, b, b - bracketSize);
+      
+      boardLayer.pop();
+    }
+  }
+  boardLayer.pop();
+}
+
+function draw() {
+  background(PALETTE.bg);
+  glowPulse += 0.02 * CONFIG.animationSpeed;
+  
+  // Camera orbit
+  cameraAngle = lerp(cameraAngle, cameraTargetAngle, 0.05);
+  const camX = cos(cameraAngle) * cameraDistance;
+  const camZ = sin(cameraAngle) * cameraDistance;
+  const camY = cameraDistance * 0.3;
+  camera(camX, camY, camZ, 0, 0, 0, 0, 1, 0);
+  
+  // Render trail layer (persistent, fading)
+  renderTrails();
+  
+  // Render glow layer
+  renderGlows();
+  
+  // Composite: board -> trails -> glows -> pieces
+  image(boardLayer, -width/2, -height/2);
+  image(trailLayer, -width/2, -height/2);
+  image(glowLayer, -width/2, -height/2);
+  
+  // Update and render pieces
+  updatePieces();
+  renderPieces();
+  
+  // Update move animations
+  updateMoveAnimations();
+  
+  // Update status
+  updateStatusUI();
+  
+  // Auto-play
+  if (CONFIG.playing && CONFIG.autoPlay) {
+    if (millis() - lastMoveTime > 2500 / CONFIG.animationSpeed) {
+      stepMove(1);
+      lastMoveTime = millis();
+    }
+  }
+}
+
+// ... more code continues ...

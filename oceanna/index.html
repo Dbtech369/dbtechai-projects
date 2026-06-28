@@ -1,0 +1,1433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Oceanna — Site Command Center</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --ocean: #0077B6;
+  --sky: #00B4D8;
+  --coral: #FF6B6B;
+  --gold: #FFD166;
+  --mint: #06D6A0;
+  --deep: #03045E;
+  --surface: #F0F8FF;
+  --white: #FFFFFF;
+  --shadow: 0 8px 32px rgba(0,119,182,0.13);
+  --shadow-deep: 0 16px 48px rgba(3,4,94,0.18);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--deep);min-height:100vh;overflow-x:hidden;}
+
+/* BACKGROUND */
+.bg-orbs{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+.orb{position:absolute;border-radius:50%;filter:blur(90px);opacity:0.18;animation:drift 20s ease-in-out infinite;}
+.orb-1{width:700px;height:700px;background:var(--ocean);top:-250px;left:-200px;animation-delay:0s;}
+.orb-2{width:450px;height:450px;background:var(--coral);top:35%;right:-120px;animation-delay:-7s;}
+.orb-3{width:400px;height:400px;background:var(--mint);bottom:-120px;left:28%;animation-delay:-14s;}
+.orb-4{width:300px;height:300px;background:var(--gold);top:65%;left:-100px;animation-delay:-5s;}
+@keyframes drift{0%,100%{transform:translate(0,0) scale(1);}33%{transform:translate(35px,-45px) scale(1.05);}66%{transform:translate(-25px,35px) scale(0.95);}}
+
+/* LAYOUT */
+.app{position:relative;z-index:1;max-width:1240px;margin:0 auto;padding:24px 20px 80px;}
+
+/* NAV TABS */
+.nav{display:flex;gap:8px;margin-bottom:20px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;}
+.nav::-webkit-scrollbar{display:none;}
+.nav-tab{padding:9px 20px;border-radius:100px;border:1.5px solid rgba(0,119,182,0.15);background:white;color:#555;font-size:0.82rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:all 0.2s;font-family:'DM Sans',sans-serif;}
+.nav-tab:hover{border-color:var(--sky);color:var(--ocean);}
+.nav-tab.active{background:linear-gradient(135deg,var(--deep),var(--ocean));color:white;border-color:transparent;box-shadow:0 4px 14px rgba(0,119,182,0.3);}
+
+/* PAGES */
+.page{display:none;}
+.page.active{display:block;}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,var(--deep) 0%,var(--ocean) 55%,var(--sky) 100%);border-radius:28px;padding:44px 48px 40px;color:white;margin-bottom:22px;position:relative;overflow:hidden;box-shadow:var(--shadow-deep);}
+.hero::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='40' cy='40' r='30' fill='none' stroke='%23ffffff' stroke-width='0.5' opacity='0.07'/%3E%3C/svg%3E");pointer-events:none;}
+.hero-inner{display:flex;align-items:flex-start;gap:24px;flex-wrap:wrap;}
+.avatar{width:82px;height:82px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--coral));display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:1.9rem;font-weight:800;color:white;flex-shrink:0;box-shadow:0 0 0 4px rgba(255,255,255,0.22);}
+.hero-text h1{font-family:'Syne',sans-serif;font-size:clamp(1.7rem,3.5vw,2.6rem);font-weight:800;line-height:1.1;letter-spacing:-0.5px;}
+.hero-text h1 span{color:var(--gold);}
+.badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.13);border:1px solid rgba(255,255,255,0.28);border-radius:100px;padding:5px 14px;margin-top:9px;font-size:0.8rem;font-weight:500;letter-spacing:0.3px;backdrop-filter:blur(8px);}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--mint);animation:pulse 2s infinite;flex-shrink:0;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.5;transform:scale(1.4);}}
+.hero-right{margin-left:auto;text-align:right;display:flex;flex-direction:column;align-items:flex-end;}
+.time-big{font-family:'Syne',sans-serif;font-size:2.4rem;font-weight:800;line-height:1;letter-spacing:-1px;}
+.date-sm{font-size:0.78rem;opacity:0.6;margin-top:3px;}
+.hero-stats{display:flex;gap:28px;margin-top:30px;flex-wrap:wrap;}
+.stat .num{font-family:'Syne',sans-serif;font-size:1.9rem;font-weight:800;color:var(--gold);line-height:1;}
+.stat .lbl{font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;opacity:0.65;margin-top:3px;}
+
+/* SITE BANNER */
+.site-banner{background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:18px;padding:18px 24px;display:flex;align-items:center;gap:16px;margin-bottom:22px;flex-wrap:wrap;}
+.site-pin{font-size:1.6rem;}
+.site-info{flex:1;}
+.site-name{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;color:white;}
+.site-meta{font-size:0.78rem;color:rgba(255,255,255,0.55);margin-top:2px;}
+.site-badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;}
+.site-badge{font-size:0.7rem;padding:3px 10px;border-radius:100px;font-weight:600;}
+.sb-active{background:rgba(6,214,160,0.18);color:var(--mint);border:1px solid rgba(6,214,160,0.3);}
+.sb-days{background:rgba(255,209,102,0.18);color:var(--gold);border:1px solid rgba(255,209,102,0.3);}
+.sb-loc{background:rgba(0,180,216,0.18);color:var(--sky);border:1px solid rgba(0,180,216,0.3);}
+
+/* GRID */
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+.g2{grid-column:span 2;}
+.g3{grid-column:span 3;}
+@media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr);}.g2{grid-column:span 2;}.g3{grid-column:span 2;}}
+@media(max-width:580px){.grid{grid-template-columns:1fr;}.g2,.g3{grid-column:span 1;}.hero{padding:26px 22px 28px;}.hero-right{display:none;}}
+
+/* CARDS */
+.card{background:white;border-radius:20px;padding:22px;box-shadow:var(--shadow);border:1px solid rgba(0,119,182,0.07);transition:transform 0.2s,box-shadow 0.2s;}
+.card:hover{transform:translateY(-2px);box-shadow:var(--shadow-deep);}
+.ch{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.ci{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
+.ct{font-family:'Syne',sans-serif;font-size:0.93rem;font-weight:700;}
+.cs{font-size:0.7rem;color:#999;margin-top:1px;}
+
+/* AI CARD */
+.ai-card{background:linear-gradient(145deg,var(--deep),#004f99);color:white;border:none;}
+.ai-card .ct,.ai-card .cs{color:white;}
+.ai-card .cs{opacity:0.55;}
+.msgs{background:rgba(0,0,0,0.22);border-radius:12px;padding:12px;min-height:190px;max-height:240px;overflow-y:auto;display:flex;flex-direction:column;gap:9px;margin-bottom:12px;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,0.15) transparent;}
+.msg{display:flex;gap:7px;align-items:flex-start;}
+.msg.u{flex-direction:row-reverse;}
+.bubble{max-width:82%;padding:8px 12px;border-radius:14px;font-size:0.82rem;line-height:1.5;}
+.msg.ai .bubble{background:rgba(255,255,255,0.11);border:1px solid rgba(255,255,255,0.14);color:white;border-bottom-left-radius:3px;}
+.msg.u .bubble{background:var(--gold);color:var(--deep);font-weight:500;border-bottom-right-radius:3px;}
+.mavatar{width:26px;height:26px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:700;}
+.typing{display:none;align-items:center;gap:4px;padding:4px 10px;}
+.typing.show{display:flex;}
+.tdot{width:5px;height:5px;border-radius:50%;background:var(--sky);animation:td 1.2s infinite;}
+.tdot:nth-child(2){animation-delay:.2s;}.tdot:nth-child(3){animation-delay:.4s;}
+@keyframes td{0%,60%,100%{opacity:.3;transform:translateY(0);}30%{opacity:1;transform:translateY(-4px);}}
+.ai-row{display:flex;gap:7px;}
+.ai-inp{flex:1;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.18);border-radius:10px;padding:9px 13px;color:white;font-size:0.82rem;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s;}
+.ai-inp::placeholder{color:rgba(255,255,255,0.38);}
+.ai-inp:focus{border-color:var(--sky);}
+.abtn{width:38px;height:38px;border-radius:10px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:0.95rem;transition:all .2s;flex-shrink:0;}
+.asend{background:var(--gold);color:var(--deep);}
+.asend:hover{background:#ffc940;transform:scale(1.06);}
+.avoice{background:rgba(255,255,255,0.1);color:white;border:1px solid rgba(255,255,255,0.18);}
+.avoice:hover,.avoice.listening{background:var(--coral);border-color:var(--coral);}
+.avoice.listening{animation:vpulse 1s infinite;}
+@keyframes vpulse{0%,100%{box-shadow:0 0 0 0 rgba(255,107,107,0.4);}50%{box-shadow:0 0 0 8px rgba(255,107,107,0);}}
+
+/* CHECKLIST */
+.add-row{display:flex;gap:7px;margin-bottom:12px;}
+.add-row input{flex:1;border:1.5px solid #e4f0fb;border-radius:10px;padding:8px 13px;font-size:0.82rem;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s;color:var(--deep);}
+.add-row input:focus{border-color:var(--sky);}
+.add-row input::placeholder{color:#bbb;}
+.add-row select{border:1.5px solid #e4f0fb;border-radius:10px;padding:0 9px;font-size:0.75rem;font-family:'DM Sans',sans-serif;outline:none;color:#555;cursor:pointer;}
+.addbtn{width:36px;height:36px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--ocean),var(--sky));color:white;cursor:pointer;font-size:1.15rem;display:flex;align-items:center;justify-content:center;transition:transform .2s;flex-shrink:0;}
+.addbtn:hover{transform:scale(1.1);}
+.clist{display:flex;flex-direction:column;gap:5px;max-height:220px;overflow-y:auto;}
+.ci-item{display:flex;align-items:center;gap:9px;padding:8px 11px;background:#f5faff;border-radius:10px;border:1px solid transparent;transition:all .2s;cursor:pointer;}
+.ci-item:hover{border-color:var(--sky);background:#eaf5ff;}
+.ci-item.done{opacity:0.5;}
+.ci-item.done .itxt{text-decoration:line-through;color:#aaa;}
+.cbox{width:18px;height:18px;border-radius:5px;border:2px solid #c5ddf0;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;font-size:0.65rem;}
+.ci-item.done .cbox{background:var(--mint);border-color:var(--mint);color:white;}
+.itxt{font-size:0.82rem;flex:1;}
+.itag{font-size:0.65rem;padding:2px 7px;border-radius:100px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;}
+.tw{background:#e4f0fb;color:var(--ocean);}
+.ts{background:#e8fdf5;color:#059669;}
+.tp{background:#fff0f0;color:var(--coral);}
+.th{background:#f3f0ff;color:#7c3aed;}
+.delbtn{background:none;border:none;cursor:pointer;color:#ddd;font-size:0.85rem;padding:1px;transition:color .2s;}
+.delbtn:hover{color:var(--coral);}
+.pbar-wrap{display:flex;align-items:center;gap:10px;margin-top:11px;}
+.pbar{flex:1;height:5px;background:#e4f0fb;border-radius:100px;overflow:hidden;}
+.pfill{height:100%;background:linear-gradient(90deg,var(--sky),var(--mint));border-radius:100px;transition:width .4s ease;}
+.ptxt{font-size:0.7rem;color:#999;white-space:nowrap;}
+
+/* MASTER CHECKLIST TEMPLATE */
+.template-section{margin-bottom:14px;}
+.tsec-title{font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#999;margin-bottom:6px;padding-left:4px;}
+.titem{display:flex;align-items:center;gap:8px;padding:7px 10px;background:#f5faff;border-radius:8px;margin-bottom:4px;cursor:pointer;transition:all .2s;}
+.titem:hover{background:#eaf5ff;}
+.titem.done{opacity:.45;}
+.titem.done .titxt{text-decoration:line-through;color:#bbb;}
+.tcbox{width:16px;height:16px;border-radius:4px;border:2px solid #c5ddf0;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.6rem;transition:all .2s;}
+.titem.done .tcbox{background:var(--mint);border-color:var(--mint);color:white;}
+.titxt{font-size:.8rem;flex:1;}
+
+/* SUPPLY / ORDER TRACKER */
+.order-table{width:100%;border-collapse:collapse;}
+.order-table th{font-size:.68rem;text-transform:uppercase;letter-spacing:.6px;color:#aaa;padding:6px 10px;text-align:left;border-bottom:1.5px solid #e8f4fd;}
+.order-table td{font-size:.8rem;padding:9px 10px;border-bottom:1px solid #f0f7ff;vertical-align:middle;}
+.order-table tr:last-child td{border-bottom:none;}
+.order-table tr:hover td{background:#f7fbff;}
+.ostatus{font-size:.68rem;font-weight:700;padding:3px 9px;border-radius:100px;}
+.o-ordered{background:#e4f0fb;color:var(--ocean);}
+.o-shipped{background:#fff8e0;color:#b8860b;}
+.o-arrived{background:#e8fdf5;color:#059669;}
+.o-needed{background:#fff0f0;color:var(--coral);}
+
+/* HOUSING LOG */
+.unit-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;}
+.unit{padding:12px;border-radius:12px;background:#f5faff;border:1.5px solid #e4f0fb;transition:all .2s;cursor:pointer;}
+.unit:hover{border-color:var(--sky);background:#eaf5ff;}
+.unit.occupied{border-color:rgba(6,214,160,0.35);background:#f0fdf8;}
+.unit.pending{border-color:rgba(255,209,102,0.4);background:#fffdf0;}
+.unit.empty{border-color:#e4f0fb;opacity:.7;}
+.unit-num{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;color:var(--deep);}
+.unit-name{font-size:.72rem;color:#555;margin-top:2px;font-weight:500;}
+.unit-status{font-size:.64rem;margin-top:5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;}
+.unit.occupied .unit-status{color:var(--mint);}
+.unit.pending .unit-status{color:#d47d00;}
+.unit.empty .unit-status{color:#bbb;}
+
+/* QUICK ACTIONS */
+.qbtns{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.qbtn{padding:13px 11px;border-radius:13px;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:flex-start;gap:3px;font-family:'DM Sans',sans-serif;transition:all .2s;}
+.qbtn:hover{transform:scale(1.03);}
+.qi{font-size:1.2rem;}.ql{font-size:.76rem;font-weight:600;}
+.qblue{background:#e4f0fb;color:var(--ocean);}
+.qcoral{background:#fff0f0;color:var(--coral);}
+.qmint{background:#e8fdf5;color:#059669;}
+.qgold{background:#fff8e0;color:#b8860b;}
+.qpurple{background:#f3f0ff;color:#7c3aed;}
+.qgray{background:#f5f5f5;color:#555;}
+
+/* FOCUS TIMER */
+.focus-card{background:linear-gradient(135deg,var(--mint),#00A896);color:white;border:none;}
+.focus-card .ct{color:white;}.focus-card .cs{color:rgba(255,255,255,.6);}
+.fbig{font-family:'Syne',sans-serif;font-size:2.8rem;font-weight:800;line-height:1;letter-spacing:-1px;}
+.flbl{font-size:.73rem;opacity:.75;margin-top:3px;}
+.fbar-w{margin-top:14px;}
+.fbar{height:5px;background:rgba(255,255,255,.25);border-radius:100px;overflow:hidden;}
+.ffill{height:100%;background:white;border-radius:100px;}
+.fmeta{display:flex;justify-content:space-between;font-size:.68rem;opacity:.75;margin-top:4px;}
+.fbtns{display:flex;gap:7px;margin-top:14px;}
+.fbtn{flex:1;padding:8px;border-radius:9px;border:none;background:rgba(255,255,255,.22);color:white;font-family:'DM Sans',sans-serif;font-size:.78rem;cursor:pointer;transition:background .2s;}
+.fbtn:hover{background:rgba(255,255,255,.35);}
+.fbtn-sm{padding:8px 11px;border-radius:9px;border:none;background:rgba(0,0,0,.12);color:white;font-family:'DM Sans',sans-serif;font-size:.78rem;cursor:pointer;}
+.fsel{border-radius:9px;border:none;background:rgba(0,0,0,.12);color:white;font-size:.75rem;padding:0 8px;cursor:pointer;font-family:'DM Sans',sans-serif;}
+
+/* NOTES */
+.ntarea{width:100%;min-height:110px;border:1.5px solid #e4f0fb;border-radius:12px;padding:11px 13px;font-size:.82rem;font-family:'DM Sans',sans-serif;color:var(--deep);outline:none;resize:vertical;transition:border-color .2s;line-height:1.6;}
+.ntarea:focus{border-color:var(--sky);}
+.ntarea::placeholder{color:#ccc;}
+.ntfoot{display:flex;justify-content:space-between;align-items:center;margin-top:7px;}
+.savebtn{background:linear-gradient(135deg,var(--ocean),var(--sky));color:white;border:none;border-radius:8px;padding:7px 15px;font-size:.76rem;font-family:'DM Sans',sans-serif;cursor:pointer;transition:opacity .2s;}
+.savebtn:hover{opacity:.85;}
+.nsaved{font-size:.7rem;color:var(--mint);display:none;}
+.nsaved.show{display:block;}
+
+/* MOTIVATION */
+.mot-card{background:linear-gradient(135deg,var(--coral),#FF9A5C);color:white;border:none;}
+.mot-card .ct{color:white;}.mot-card .cs{color:rgba(255,255,255,.6);}
+.mquote{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;line-height:1.45;margin-bottom:6px;}
+.mattr{font-size:.72rem;opacity:.78;}
+.mnew{margin-top:12px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);color:white;border-radius:8px;padding:6px 14px;cursor:pointer;font-size:.75rem;font-family:'DM Sans',sans-serif;transition:background .2s;}
+.mnew:hover{background:rgba(255,255,255,.3);}
+
+/* WEATHER WIDGET */
+.weather-card{background:linear-gradient(135deg,#1a1a2e,#0f3460);color:white;border:none;}
+.weather-card .ct{color:white;}.weather-card .cs{color:rgba(255,255,255,.55);}
+.weather-big{font-size:2.8rem;font-weight:300;line-height:1;}
+.weather-desc{font-size:.8rem;opacity:.75;margin-top:4px;}
+.weather-details{display:flex;gap:16px;margin-top:14px;}
+.wd{font-size:.72rem;opacity:.65;}
+.wd span{display:block;font-weight:600;font-size:.85rem;opacity:1;color:var(--gold);}
+
+/* EMERGENT PROCUREMENT */
+.emg-banner{background:linear-gradient(135deg,#c0392b,#e74c3c);border-radius:18px;padding:20px 24px;display:flex;align-items:center;gap:16px;margin-bottom:20px;flex-wrap:wrap;}
+.emg-banner-text{flex:1;}
+.emg-banner-title{font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;color:white;}
+.emg-banner-sub{font-size:.75rem;color:rgba(255,255,255,.7);margin-top:2px;}
+.emg-add-btn{background:white;color:#c0392b;border:none;border-radius:11px;padding:10px 20px;font-size:.82rem;font-family:'DM Sans',sans-serif;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .2s;}
+.emg-add-btn:hover{transform:scale(1.04);}
+.emg-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
+.emg-stat{background:white;border-radius:14px;padding:14px;text-align:center;box-shadow:var(--shadow);border:1px solid rgba(0,119,182,.07);}
+.emg-stat-num{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;line-height:1;}
+.emg-stat-lbl{font-size:.65rem;text-transform:uppercase;letter-spacing:.8px;color:#aaa;margin-top:3px;}
+.emg-list{display:flex;flex-direction:column;gap:12px;}
+.emg-card{background:white;border-radius:16px;padding:18px;box-shadow:var(--shadow);border-left:4px solid #ddd;transition:all .2s;}
+.emg-card:hover{transform:translateY(-1px);box-shadow:var(--shadow-deep);}
+.emg-card.ep-critical{border-left-color:#e74c3c;}
+.emg-card.ep-high{border-left-color:var(--gold);}
+.emg-card.ep-normal{border-left-color:var(--sky);}
+.emg-top{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;}
+.emg-priority{font-size:.65rem;font-weight:800;padding:3px 9px;border-radius:100px;text-transform:uppercase;letter-spacing:.5px;flex-shrink:0;}
+.ep-critical .emg-priority{background:#ffe8e8;color:#c0392b;}
+.ep-high .emg-priority{background:#fff8e0;color:#b8860b;}
+.ep-normal .emg-priority{background:#e4f0fb;color:var(--ocean);}
+.emg-title{font-family:'Syne',sans-serif;font-weight:700;font-size:.92rem;flex:1;}
+.emg-status-badge{font-size:.65rem;font-weight:700;padding:3px 9px;border-radius:100px;flex-shrink:0;}
+.es-new{background:#fff0f0;color:#c0392b;}
+.es-sourcing{background:#fff8e0;color:#b8860b;}
+.es-ordered{background:#e4f0fb;color:var(--ocean);}
+.es-arrived{background:#e8fdf5;color:#059669;}
+.emg-meta{display:flex;gap:16px;flex-wrap:wrap;font-size:.75rem;color:#777;margin-bottom:10px;}
+.emg-actions{display:flex;gap:7px;flex-wrap:wrap;}
+.emg-btn{padding:6px 13px;border-radius:8px;border:none;font-size:.72rem;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;transition:all .2s;}
+.emg-btn:hover{opacity:.8;}
+
+/* RECURRING SERVICES */
+.rec-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
+.rec-stat{background:white;border-radius:14px;padding:14px;text-align:center;box-shadow:var(--shadow);}
+.rec-stat-num{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;line-height:1;}
+.rec-stat-lbl{font-size:.65rem;text-transform:uppercase;letter-spacing:.8px;color:#aaa;margin-top:3px;}
+.rec-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;}
+.rec-card{background:white;border-radius:16px;padding:18px;box-shadow:var(--shadow);border:1.5px solid #e4f0fb;position:relative;overflow:hidden;transition:all .2s;}
+.rec-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-deep);}
+.rec-card::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.rec-card.rs-ok::after{background:linear-gradient(90deg,var(--mint),var(--sky));}
+.rec-card.rs-due::after{background:linear-gradient(90deg,var(--gold),#ffa500);}
+.rec-card.rs-overdue::after{background:linear-gradient(90deg,var(--coral),#c0392b);}
+.rec-top{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.rec-emoji{font-size:1.6rem;}
+.rec-name{font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;}
+.rec-vendor{font-size:.72rem;color:#999;margin-top:1px;}
+.rec-status-badge{margin-left:auto;font-size:.65rem;font-weight:800;padding:4px 10px;border-radius:100px;text-transform:uppercase;letter-spacing:.5px;}
+.rs-ok .rec-status-badge{background:#e8fdf5;color:#059669;}
+.rs-due .rec-status-badge{background:#fff8e0;color:#b8860b;}
+.rs-overdue .rec-status-badge{background:#ffe8e8;color:#c0392b;}
+.rec-details{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
+.rec-detail{background:#f7fbff;border-radius:8px;padding:8px 10px;}
+.rec-detail-label{font-size:.62rem;text-transform:uppercase;letter-spacing:.6px;color:#aaa;margin-bottom:2px;}
+.rec-detail-val{font-size:.8rem;font-weight:600;color:var(--deep);}
+.rec-footer{display:flex;gap:7px;}
+.rec-btn{flex:1;padding:7px;border-radius:9px;border:none;font-size:.74rem;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;transition:all .2s;}
+.rec-btn:hover{opacity:.85;}
+.rb-done{background:#e8fdf5;color:#059669;}
+.rb-edit{background:#f5faff;color:var(--ocean);}
+.rb-skip{background:#f5f5f5;color:#888;}
+
+.vcard-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:18px;}
+.vcard{background:white;border-radius:16px;padding:18px;border:1.5px solid #e4f0fb;transition:all .2s;cursor:pointer;position:relative;overflow:hidden;}
+.vcard:hover{border-color:var(--sky);box-shadow:var(--shadow);}
+.vcard::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.vcard.vc-active::before{background:linear-gradient(90deg,var(--mint),var(--sky));}
+.vcard.vc-pending::before{background:linear-gradient(90deg,var(--gold),var(--coral));}
+.vcard.vc-issue::before{background:linear-gradient(90deg,var(--coral),#ff4040);}
+.vcard.vc-inactive::before{background:#ddd;}
+.vcard-top{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;}
+.vcard-emoji{font-size:1.5rem;flex-shrink:0;}
+.vcard-name{font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;color:var(--deep);}
+.vcard-cat{font-size:.7rem;color:#999;margin-top:1px;}
+.vstatus{font-size:.68rem;font-weight:700;padding:3px 9px;border-radius:100px;margin-left:auto;flex-shrink:0;}
+.vs-active{background:#e8fdf5;color:#059669;}
+.vs-pending{background:#fff8e0;color:#b8860b;}
+.vs-issue{background:#fff0f0;color:var(--coral);}
+.vs-inactive{background:#f5f5f5;color:#aaa;}
+.vcard-details{display:flex;flex-direction:column;gap:5px;}
+.vdetail{display:flex;align-items:center;gap:7px;font-size:.78rem;color:#555;}
+.vdetail-icon{font-size:.85rem;width:18px;text-align:center;flex-shrink:0;}
+.vcard-footer{display:flex;gap:6px;margin-top:12px;padding-top:10px;border-top:1px solid #f0f7ff;}
+.vaction{flex:1;padding:6px;border-radius:8px;border:none;font-size:.72rem;font-family:'DM Sans',sans-serif;cursor:pointer;font-weight:600;transition:all .2s;}
+.va-call{background:#e4f0fb;color:var(--ocean);}
+.va-call:hover{background:#d0e8f8;}
+.va-note{background:#f5faff;color:#555;}
+.va-note:hover{background:#e8f4fd;}
+.va-flag{background:#fff0f0;color:var(--coral);}
+.va-flag:hover{background:#ffe0e0;}
+
+.vendor-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
+.vstat{background:white;border-radius:14px;padding:16px;text-align:center;box-shadow:var(--shadow);border:1px solid rgba(0,119,182,.07);}
+.vstat-num{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;line-height:1;}
+.vstat-lbl{font-size:.68rem;text-transform:uppercase;letter-spacing:.8px;color:#aaa;margin-top:3px;}
+.vfilter-row{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+.vfilter{padding:6px 14px;border-radius:100px;border:1.5px solid #e4f0fb;background:white;color:#555;font-size:.75rem;font-weight:600;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;}
+.vfilter:hover{border-color:var(--sky);color:var(--ocean);}
+.vfilter.active{background:var(--ocean);color:white;border-color:var(--ocean);}
+
+/* VENDOR MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(3,4,94,.55);z-index:100;display:none;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.show{display:flex;}
+.modal{background:white;border-radius:24px;padding:28px;max-width:520px;width:100%;max-height:85vh;overflow-y:auto;box-shadow:var(--shadow-deep);}
+.modal-title{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;margin-bottom:20px;color:var(--deep);}
+.mfield{margin-bottom:14px;}
+.mfield label{display:block;font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#aaa;margin-bottom:5px;}
+.mfield input,.mfield select,.mfield textarea{width:100%;border:1.5px solid #e4f0fb;border-radius:10px;padding:9px 13px;font-size:.83rem;font-family:'DM Sans',sans-serif;color:var(--deep);outline:none;transition:border-color .2s;}
+.mfield input:focus,.mfield select:focus,.mfield textarea:focus{border-color:var(--sky);}
+.mfield textarea{min-height:80px;resize:vertical;}
+.mrow{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.modal-btns{display:flex;gap:8px;margin-top:20px;}
+.mbtn-save{flex:1;padding:11px;border-radius:11px;border:none;background:linear-gradient(135deg,var(--ocean),var(--sky));color:white;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;}
+.mbtn-cancel{padding:11px 18px;border-radius:11px;border:1.5px solid #e4f0fb;background:white;color:#555;font-family:'DM Sans',sans-serif;font-size:.85rem;cursor:pointer;}
+
+.toast{position:fixed;bottom:24px;right:24px;z-index:999;background:var(--deep);color:white;padding:11px 18px;border-radius:12px;font-size:.8rem;box-shadow:var(--shadow-deep);transform:translateY(80px);opacity:0;transition:all .35s ease;border-left:3px solid var(--mint);}
+.toast.show{transform:translateY(0);opacity:1;}
+
+/* FOOTER */
+.footer{text-align:center;margin-top:40px;font-size:.75rem;color:#aac;}
+.footer span{color:var(--coral);}
+
+/* SECTION HEADER */
+.sec-hdr{font-family:'Syne',sans-serif;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:#aac;margin-bottom:12px;padding-left:2px;}
+
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:#c5ddf0;border-radius:10px;}
+</style>
+</head>
+<body>
+<div class="bg-orbs">
+  <div class="orb orb-1"></div><div class="orb orb-2"></div>
+  <div class="orb orb-3"></div><div class="orb orb-4"></div>
+</div>
+
+<div class="app">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="avatar">OC</div>
+      <div class="hero-text">
+        <h1>Hey, <span>Oceanna</span> 👋</h1>
+        <div class="badge"><div class="dot"></div>Supply Chain Specialist · Site Logistics</div>
+      </div>
+      <div class="hero-right">
+        <div class="time-big" id="live-time">--:--</div>
+        <div class="date-sm" id="live-date">Loading...</div>
+      </div>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><div class="num" id="stat-done">0</div><div class="lbl">Done today</div></div>
+      <div class="stat"><div class="num" id="stat-left">0</div><div class="lbl">Still to go</div></div>
+      <div class="stat"><div class="num" id="stat-sites">1</div><div class="lbl">Active site</div></div>
+      <div class="stat"><div class="num">⭐</div><div class="lbl">Outstanding</div></div>
+    </div>
+  </div>
+
+  <!-- ACTIVE SITE BANNER -->
+  <div class="site-banner">
+    <div class="site-pin">📍</div>
+    <div class="site-info">
+      <div class="site-name">Norfolk Naval Shipyard — Portsmouth, Virginia</div>
+      <div class="site-meta">Deployment start: July 2025 · Duration: 6 months · Crew: 48 workers</div>
+      <div class="site-badges">
+        <span class="site-badge sb-active">● Active</span>
+        <span class="site-badge sb-days">~180 days</span>
+        <span class="site-badge sb-loc">Virginia</span>
+      </div>
+    </div>
+    <button onclick="showToast('📍 Site details coming soon!')" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:white;border-radius:10px;padding:8px 16px;font-size:.78rem;cursor:pointer;font-family:'DM Sans',sans-serif;">Edit Site</button>
+  </div>
+
+  <!-- NAV TABS -->
+  <div class="nav">
+    <button class="nav-tab active" onclick="switchPage('dashboard',this)">🏠 Dashboard</button>
+    <button class="nav-tab" onclick="switchPage('setup',this)">📋 Site Setup</button>
+    <button class="nav-tab" onclick="switchPage('orders',this)">📦 Orders & Supply</button>
+    <button class="nav-tab" onclick="switchPage('housing',this)">🏠 Housing</button>
+    <button class="nav-tab" onclick="switchPage('aria',this)">🤖 Aria AI</button>
+    <button class="nav-tab" onclick="switchPage('vendors',this)">🤝 Vendors</button>
+    <button class="nav-tab" onclick="switchPage('emergent',this)">🚨 Emergent</button>
+    <button class="nav-tab" onclick="switchPage('recurring',this)">🔄 Recurring</button>
+    <button class="nav-tab" onclick="switchPage('notes',this)">📝 Notes</button>
+  </div>
+
+  <!-- PAGE: DASHBOARD -->
+  <div class="page active" id="page-dashboard">
+    <div class="grid">
+
+      <!-- TODAY'S TASKS -->
+      <div class="card g2">
+        <div class="ch">
+          <div class="ci" style="background:#e4f0fb;">✅</div>
+          <div><div class="ct">Today's Tasks</div><div class="cs">What needs to get done right now</div></div>
+        </div>
+        <div class="add-row">
+          <input id="new-task" placeholder="Add a task…" onkeydown="if(event.key==='Enter')addTask()"/>
+          <select id="task-tag">
+            <option value="w">Work</option>
+            <option value="s">Supply</option>
+            <option value="h">Housing</option>
+            <option value="p">Personal</option>
+          </select>
+          <button class="addbtn" onclick="addTask()">+</button>
+        </div>
+        <div class="clist" id="tasklist"></div>
+        <div class="pbar-wrap">
+          <div class="pbar"><div class="pfill" id="pfill" style="width:0%"></div></div>
+          <div class="ptxt" id="ptxt">0 of 0 done</div>
+        </div>
+      </div>
+
+      <!-- MOTIVATION -->
+      <div class="card mot-card">
+        <div class="ch">
+          <div class="ci" style="background:rgba(255,255,255,.2);">✨</div>
+          <div><div class="ct">Daily Spark</div><div class="cs">Fuel for a big day</div></div>
+        </div>
+        <div class="mquote" id="mquote">"She believed she could, so she did."</div>
+        <div class="mattr" id="mattr">— R.S. Grey</div>
+        <button class="mnew" onclick="newQuote()">New spark ✦</button>
+      </div>
+
+      <!-- QUICK ACTIONS -->
+      <div class="card">
+        <div class="ch">
+          <div class="ci" style="background:#fff8e0;">⚡</div>
+          <div><div class="ct">Quick Add</div><div class="cs">One tap to task</div></div>
+        </div>
+        <div class="qbtns">
+          <button class="qbtn qblue" onclick="quickTask('Set up workspaces','s')"><span class="qi">🏗</span><span class="ql">Workspace Prep</span></button>
+          <button class="qbtn qcoral" onclick="quickTask('Restock work supplies','s')"><span class="qi">📦</span><span class="ql">Restock Supplies</span></button>
+          <button class="qbtn qmint" onclick="quickTask('Check apartment readiness','h')"><span class="qi">🏠</span><span class="ql">Apt Check</span></button>
+          <button class="qbtn qgold" onclick="quickTask('Coffee & kitchen setup','s')"><span class="qi">☕</span><span class="ql">Coffee Setup</span></button>
+          <button class="qbtn qpurple" onclick="quickTask('Confirm crew arrival details','w')"><span class="qi">👷</span><span class="ql">Crew Confirm</span></button>
+          <button class="qbtn qgray" onclick="quickTask('Office equipment check','w')"><span class="qi">🖥</span><span class="ql">Office Check</span></button>
+        </div>
+      </div>
+
+      <!-- FOCUS TIMER -->
+      <div class="card focus-card">
+        <div class="ch">
+          <div class="ci" style="background:rgba(255,255,255,.2);">⏱</div>
+          <div><div class="ct">Focus Timer</div><div class="cs">Stay in the zone</div></div>
+        </div>
+        <div class="fbig" id="fdisplay">25:00</div>
+        <div class="flbl" id="flbl">Ready to focus</div>
+        <div class="fbar-w">
+          <div class="fbar"><div class="ffill" id="ffill" style="width:100%"></div></div>
+          <div class="fmeta"><span id="fstartlbl">25 min</span><span id="fpct">100%</span></div>
+        </div>
+        <div class="fbtns">
+          <button class="fbtn" id="fstartbtn" onclick="startFocus()">▶ Start</button>
+          <button class="fbtn-sm" onclick="resetFocus()">↺</button>
+          <select class="fsel" id="fmins" onchange="resetFocus()">
+            <option value="25">25m</option><option value="15">15m</option>
+            <option value="50">50m</option><option value="5">5m</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- SUPPLY SNAPSHOT -->
+      <div class="card g2">
+        <div class="ch">
+          <div class="ci" style="background:#e8fdf5;">📦</div>
+          <div><div class="ct">Site Supply Snapshot</div><div class="cs">Virginia deployment — at a glance</div></div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;">
+          <div style="padding:12px;background:#f5faff;border-radius:12px;border:1.5px solid rgba(6,214,160,.3);">
+            <div style="font-size:1.4rem;">🏠</div>
+            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.85rem;margin-top:4px;">Apartments</div>
+            <div style="font-size:.7rem;color:var(--mint);font-weight:700;margin-top:2px;">● Ready</div>
+          </div>
+          <div style="padding:12px;background:#f5faff;border-radius:12px;border:1.5px solid rgba(255,209,102,.4);">
+            <div style="font-size:1.4rem;">🖥</div>
+            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.85rem;margin-top:4px;">Work Offices</div>
+            <div style="font-size:.7rem;color:#d47d00;font-weight:700;margin-top:2px;">● In Progress</div>
+          </div>
+          <div style="padding:12px;background:#f5faff;border-radius:12px;border:1.5px solid rgba(255,209,102,.4);">
+            <div style="font-size:1.4rem;">🛠</div>
+            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.85rem;margin-top:4px;">Work Supplies</div>
+            <div style="font-size:.7rem;color:#d47d00;font-weight:700;margin-top:2px;">● Pending Order</div>
+          </div>
+          <div style="padding:12px;background:#f5faff;border-radius:12px;border:1.5px solid rgba(255,107,107,.3);">
+            <div style="font-size:1.4rem;">☕</div>
+            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.85rem;margin-top:4px;">Coffee / Kitchen</div>
+            <div style="font-size:.7rem;color:var(--coral);font-weight:700;margin-top:2px;">● Needed</div>
+          </div>
+          <div style="padding:12px;background:#f5faff;border-radius:12px;border:1.5px solid rgba(6,214,160,.3);">
+            <div style="font-size:1.4rem;">🔐</div>
+            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.85rem;margin-top:4px;">Key/Access Cards</div>
+            <div style="font-size:.7rem;color:var(--mint);font-weight:700;margin-top:2px;">● Ready</div>
+          </div>
+          <div style="padding:12px;background:#f5faff;border-radius:12px;border:1.5px solid rgba(255,107,107,.3);">
+            <div style="font-size:1.4rem;">🌐</div>
+            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.85rem;margin-top:4px;">Internet / Wifi</div>
+            <div style="font-size:.7rem;color:var(--coral);font-weight:700;margin-top:2px;">● Needed</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- PAGE: SITE SETUP MASTER CHECKLIST -->
+  <div class="page" id="page-setup">
+    <div class="grid">
+      <div class="card g3">
+        <div class="ch">
+          <div class="ci" style="background:#e4f0fb;">📋</div>
+          <div><div class="ct">Site Setup Master Checklist</div><div class="cs">Run this every time you land at a new deployment</div></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;" id="master-list">
+          <!-- JS fills this -->
+        </div>
+        <div class="pbar-wrap" style="margin-top:16px;">
+          <div class="pbar"><div class="pfill" id="mpfill" style="width:0%"></div></div>
+          <div class="ptxt" id="mptxt">0% complete</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE: ORDERS & SUPPLY -->
+  <div class="page" id="page-orders">
+    <div class="grid">
+      <div class="card g3">
+        <div class="ch">
+          <div class="ci" style="background:#e8fdf5;">📦</div>
+          <div><div class="ct">Orders & Supply Tracker</div><div class="cs">Virginia deployment — all orders in one place</div></div>
+        </div>
+        <table class="order-table">
+          <thead>
+            <tr><th>Item</th><th>Category</th><th>Vendor</th><th>Qty</th><th>ETA</th><th>Status</th></tr>
+          </thead>
+          <tbody id="order-tbody">
+          </tbody>
+        </table>
+        <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;">
+          <button onclick="addOrderRow()" style="background:linear-gradient(135deg,var(--ocean),var(--sky));color:white;border:none;border-radius:10px;padding:9px 18px;font-size:.8rem;cursor:pointer;font-family:'DM Sans',sans-serif;">+ Add Item</button>
+          <button onclick="showToast('📊 Export coming soon!')" style="background:#f5faff;color:var(--ocean);border:1.5px solid #e4f0fb;border-radius:10px;padding:9px 18px;font-size:.8rem;cursor:pointer;font-family:'DM Sans',sans-serif;">Export List</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE: HOUSING -->
+  <div class="page" id="page-housing">
+    <div class="grid">
+      <div class="card g3">
+        <div class="ch">
+          <div class="ci" style="background:#f3f0ff;">🏠</div>
+          <div><div class="ct">Housing Log</div><div class="cs">Worker apartment assignments — Virginia site</div></div>
+        </div>
+        <div class="unit-grid" id="unit-grid"></div>
+        <div style="display:flex;gap:14px;margin-top:16px;flex-wrap:wrap;">
+          <div style="display:flex;align-items:center;gap:6px;font-size:.75rem;color:#555;"><div style="width:10px;height:10px;border-radius:3px;background:rgba(6,214,160,.4);"></div>Occupied</div>
+          <div style="display:flex;align-items:center;gap:6px;font-size:.75rem;color:#555;"><div style="width:10px;height:10px;border-radius:3px;background:rgba(255,209,102,.5);"></div>Pending</div>
+          <div style="display:flex;align-items:center;gap:6px;font-size:.75rem;color:#555;"><div style="width:10px;height:10px;border-radius:3px;background:#e4f0fb;"></div>Available</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE: ARIA AI -->
+  <div class="page" id="page-aria">
+    <div class="grid">
+      <div class="card ai-card g2">
+        <div class="ch">
+          <div class="ci" style="background:rgba(255,255,255,.12);">🤖</div>
+          <div><div class="ct">Aria — Your AI Assistant</div><div class="cs">Ask anything · Manage tasks · Think out loud</div></div>
+        </div>
+        <div class="msgs" id="ai-msgs">
+          <div class="msg ai">
+            <div class="mavatar" style="background:linear-gradient(135deg,#00B4D8,#06D6A0);color:#03045E;">A</div>
+            <div class="bubble">Hey Oceanna! 👋 I'm Aria. I know you're a traveling logistics specialist — you set up entire job sites from scratch. Offices, housing, supplies, the coffee maker, everything. I'm here to help you stay organized across every deployment. What do you need right now?</div>
+          </div>
+        </div>
+        <div class="typing" id="typing"><div class="mavatar" style="background:linear-gradient(135deg,#00B4D8,#06D6A0);color:#03045E;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;flex-shrink:0;">A</div><div style="display:flex;gap:4px;align-items:center;margin-left:5px;"><div class="tdot"></div><div class="tdot"></div><div class="tdot"></div></div></div>
+        <div class="ai-row">
+          <input class="ai-inp" id="ai-inp" placeholder="Ask Aria anything…" autocomplete="off" onkeydown="if(event.key==='Enter')sendAI()"/>
+          <button class="abtn avoice" id="vbtn" title="Voice input">🎤</button>
+          <button class="abtn asend" onclick="sendAI()">➤</button>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div class="card mot-card" style="flex:1;">
+          <div class="ch"><div class="ci" style="background:rgba(255,255,255,.2);">✨</div><div><div class="ct">Daily Spark</div><div class="cs">Your fuel</div></div></div>
+          <div class="mquote" id="mquote2">"She believed she could, so she did."</div>
+          <div class="mattr" id="mattr2">— R.S. Grey</div>
+          <button class="mnew" onclick="newQuote2()">New spark ✦</button>
+        </div>
+        <div class="card">
+          <div class="ch"><div class="ci" style="background:#f3f0ff;">💡</div><div><div class="ct">Ask Aria…</div><div class="cs">Try these</div></div></div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <button onclick="ariaPrompt('What should I prioritize today for the Virginia site setup?')" style="text-align:left;padding:8px 12px;background:#f5faff;border:1.5px solid #e4f0fb;border-radius:9px;font-size:.78rem;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--deep);transition:all .2s;" onmouseover="this.style.borderColor='var(--sky)'" onmouseout="this.style.borderColor='#e4f0fb'">"What should I prioritize today?"</button>
+            <button onclick="ariaPrompt('Draft a message to the supply vendor about a delayed order')" style="text-align:left;padding:8px 12px;background:#f5faff;border:1.5px solid #e4f0fb;border-radius:9px;font-size:.78rem;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--deep);transition:all .2s;" onmouseover="this.style.borderColor='var(--sky)'" onmouseout="this.style.borderColor='#e4f0fb'">"Draft a message to a vendor"</button>
+            <button onclick="ariaPrompt('Give me a quick checklist for setting up a worker apartment')" style="text-align:left;padding:8px 12px;background:#f5faff;border:1.5px solid #e4f0fb;border-radius:9px;font-size:.78rem;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--deep);transition:all .2s;" onmouseover="this.style.borderColor='var(--sky)'" onmouseout="this.style.borderColor='#e4f0fb'">"Apartment setup checklist"</button>
+            <button onclick="ariaPrompt('What are common supply chain mistakes to avoid on a new job site deployment?')" style="text-align:left;padding:8px 12px;background:#f5faff;border:1.5px solid #e4f0fb;border-radius:9px;font-size:.78rem;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--deep);transition:all .2s;" onmouseover="this.style.borderColor='var(--sky)'" onmouseout="this.style.borderColor='#e4f0fb'">"Common mistakes to avoid"</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE: NOTES -->
+  <div class="page" id="page-notes">
+    <div class="grid">
+      <div class="card g2">
+        <div class="ch"><div class="ci" style="background:#f0f4ff;">📝</div><div><div class="ct">Quick Notes</div><div class="cs">Brain dump, then move fast</div></div></div>
+        <textarea class="ntarea" id="ntarea" placeholder="Jot down anything — follow-ups, vendor contacts, site quirks, reminders…"></textarea>
+        <div class="ntfoot">
+          <div class="nsaved" id="nsaved">✓ Saved</div>
+          <button class="savebtn" onclick="saveNote()">Save note</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ci" style="background:#fff8e0;">📌</div><div><div class="ct">Pinned</div><div class="cs">Always visible</div></div></div>
+        <div style="display:flex;flex-direction:column;gap:7px;">
+          <div style="padding:10px 12px;background:#fff8e0;border-radius:10px;border:1.5px solid rgba(255,209,102,.4);">
+            <div style="font-size:.72rem;font-weight:700;color:#b8860b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;">Virginia Deployment</div>
+            <div style="font-size:.8rem;color:var(--deep);">Start: July 2025 · 6 months · 48 crew</div>
+          </div>
+          <div style="padding:10px 12px;background:#e8fdf5;border-radius:10px;border:1.5px solid rgba(6,214,160,.3);">
+            <div style="font-size:.72rem;font-weight:700;color:#059669;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;">Emergency Contact</div>
+            <div style="font-size:.8rem;color:var(--deep);">Site Manager: TBD</div>
+          </div>
+          <div style="padding:10px 12px;background:#f5faff;border-radius:10px;border:1.5px solid #e4f0fb;">
+            <div style="font-size:.72rem;font-weight:700;color:var(--ocean);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;">Next Site</div>
+            <div style="font-size:.8rem;color:var(--deep);">TBD — update when confirmed</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE: VENDORS -->
+  <div class="page" id="page-vendors">
+    <div class="vendor-stats">
+      <div class="vstat"><div class="vstat-num" style="color:var(--mint);" id="vs-total">0</div><div class="vstat-lbl">Total Vendors</div></div>
+      <div class="vstat"><div class="vstat-num" style="color:var(--mint);" id="vs-active">0</div><div class="vstat-lbl">Active</div></div>
+      <div class="vstat"><div class="vstat-num" style="color:var(--gold);" id="vs-pending">0</div><div class="vstat-lbl">Pending</div></div>
+      <div class="vstat"><div class="vstat-num" style="color:var(--coral);" id="vs-issue">0</div><div class="vstat-lbl">Need Attention</div></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
+      <div class="vfilter-row" style="margin-bottom:0;">
+        <button class="vfilter active" onclick="filterVendors('all',this)">All</button>
+        <button class="vfilter" onclick="filterVendors('active',this)">Active</button>
+        <button class="vfilter" onclick="filterVendors('pending',this)">Pending</button>
+        <button class="vfilter" onclick="filterVendors('issue',this)">Issues</button>
+        <button class="vfilter" onclick="filterVendors('housing',this)">Housing</button>
+        <button class="vfilter" onclick="filterVendors('supplies',this)">Supplies</button>
+        <button class="vfilter" onclick="filterVendors('it',this)">IT</button>
+        <button class="vfilter" onclick="filterVendors('kitchen',this)">Kitchen</button>
+      </div>
+      <button onclick="openVendorModal()" style="background:linear-gradient(135deg,var(--ocean),var(--sky));color:white;border:none;border-radius:11px;padding:10px 20px;font-size:.82rem;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;white-space:nowrap;">+ Add Vendor</button>
+    </div>
+    <div class="vcard-grid" id="vendor-grid"></div>
+  </div>
+
+  <!-- VENDOR MODAL -->
+  <div class="modal-overlay" id="vendor-modal">
+    <div class="modal">
+      <div class="modal-title">🤝 Add / Edit Vendor</div>
+      <div class="mrow">
+        <div class="mfield"><label>Vendor Name</label><input id="v-name" placeholder="e.g. Grainger"/></div>
+        <div class="mfield"><label>Category</label>
+          <select id="v-cat">
+            <option value="supplies">Supplies</option>
+            <option value="housing">Housing</option>
+            <option value="it">IT / Tech</option>
+            <option value="kitchen">Kitchen</option>
+            <option value="furniture">Furniture</option>
+            <option value="safety">Safety / PPE</option>
+            <option value="transport">Transport</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="mrow">
+        <div class="mfield"><label>Contact Name</label><input id="v-contact" placeholder="e.g. John Smith"/></div>
+        <div class="mfield"><label>Phone</label><input id="v-phone" placeholder="e.g. (555) 123-4567"/></div>
+      </div>
+      <div class="mrow">
+        <div class="mfield"><label>Email</label><input id="v-email" placeholder="vendor@email.com"/></div>
+        <div class="mfield"><label>Status</label>
+          <select id="v-status">
+            <option value="active">Active</option>
+            <option value="pending">Pending</option>
+            <option value="issue">Has Issue</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
+      </div>
+      <div class="mrow">
+        <div class="mfield"><label>Contract / PO #</label><input id="v-contract" placeholder="e.g. PO-2025-001"/></div>
+        <div class="mfield"><label>Next Action Date</label><input id="v-date" type="date"/></div>
+      </div>
+      <div class="mfield"><label>Notes</label><textarea id="v-notes" placeholder="What do they supply? Any issues? Payment terms? Special instructions…"></textarea></div>
+      <div class="modal-btns">
+        <button class="mbtn-cancel" onclick="closeVendorModal()">Cancel</button>
+        <button class="mbtn-save" onclick="saveVendor()">Save Vendor</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE: EMERGENT PROCUREMENT -->
+  <div class="page" id="page-emergent">
+    <div class="emg-banner">
+      <div style="font-size:2rem;">🚨</div>
+      <div class="emg-banner-text">
+        <div class="emg-banner-title">Emergent Procurement</div>
+        <div class="emg-banner-sub">Unplanned, urgent requests — track from "just came in" to "on site"</div>
+      </div>
+      <button class="emg-add-btn" onclick="openEmgModal()">+ New Emergency Request</button>
+    </div>
+    <div class="emg-stats">
+      <div class="emg-stat"><div class="emg-stat-num" style="color:#e74c3c;" id="emg-new">0</div><div class="emg-stat-lbl">New / Open</div></div>
+      <div class="emg-stat"><div class="emg-stat-num" style="color:#d47d00;" id="emg-sourcing">0</div><div class="emg-stat-lbl">Sourcing</div></div>
+      <div class="emg-stat"><div class="emg-stat-num" style="color:var(--ocean);" id="emg-ordered">0</div><div class="emg-stat-lbl">Ordered</div></div>
+      <div class="emg-stat"><div class="emg-stat-num" style="color:var(--mint);" id="emg-arrived">0</div><div class="emg-stat-lbl">Arrived</div></div>
+    </div>
+    <div class="emg-list" id="emg-list"></div>
+  </div>
+
+  <!-- EMERGENT MODAL -->
+  <div class="modal-overlay" id="emg-modal">
+    <div class="modal">
+      <div class="modal-title">🚨 New Emergency Request</div>
+      <div class="mfield"><label>What's needed?</label><input id="em-item" placeholder="e.g. Portable generator, Extra PPE kits…"/></div>
+      <div class="mrow">
+        <div class="mfield"><label>Priority</label>
+          <select id="em-priority">
+            <option value="critical">🔴 Critical — Hours</option>
+            <option value="high">🟡 High — Same Day</option>
+            <option value="normal">🔵 Normal — Next Day</option>
+          </select>
+        </div>
+        <div class="mfield"><label>Quantity</label><input id="em-qty" placeholder="e.g. 2 units"/></div>
+      </div>
+      <div class="mrow">
+        <div class="mfield"><label>Requested By</label><input id="em-requester" placeholder="Who asked for it?"/></div>
+        <div class="mfield"><label>Date / Time Needed</label><input id="em-date" type="datetime-local"/></div>
+      </div>
+      <div class="mfield"><label>Reason / Context</label><textarea id="em-reason" placeholder="Why is this needed urgently? What happens if it's not there?"></textarea></div>
+      <div class="mfield"><label>Status</label>
+        <select id="em-status">
+          <option value="new">New — Just came in</option>
+          <option value="sourcing">Sourcing — Finding vendor</option>
+          <option value="ordered">Ordered — On its way</option>
+          <option value="arrived">Arrived — On site</option>
+        </select>
+      </div>
+      <div class="modal-btns">
+        <button class="mbtn-cancel" onclick="closeEmgModal()">Cancel</button>
+        <button class="mbtn-save" onclick="saveEmg()" style="background:linear-gradient(135deg,#c0392b,#e74c3c);">Save Request</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE: RECURRING SERVICES -->
+  <div class="page" id="page-recurring">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+      <div>
+        <div style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;color:var(--deep);">🔄 Recurring Services</div>
+        <div style="font-size:.75rem;color:#999;margin-top:2px;">Scheduled vendor services — never miss a pickup or visit</div>
+      </div>
+      <button onclick="openRecModal()" style="background:linear-gradient(135deg,var(--ocean),var(--sky));color:white;border:none;border-radius:11px;padding:10px 20px;font-size:.82rem;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;">+ Add Service</button>
+    </div>
+    <div class="rec-stats">
+      <div class="rec-stat"><div class="rec-stat-num" style="color:var(--mint);" id="rs-ok">0</div><div class="rec-stat-lbl">On Schedule</div></div>
+      <div class="rec-stat"><div class="rec-stat-num" style="color:var(--gold);" id="rs-due">0</div><div class="rec-stat-lbl">Due Today</div></div>
+      <div class="rec-stat"><div class="rec-stat-num" style="color:var(--coral);" id="rs-overdue">0</div><div class="rec-stat-lbl">Overdue</div></div>
+      <div class="rec-stat"><div class="rec-stat-num" style="color:#aaa;" id="rs-total">0</div><div class="rec-stat-lbl">Total Services</div></div>
+    </div>
+    <div class="rec-grid" id="rec-grid"></div>
+  </div>
+
+  <!-- RECURRING MODAL -->
+  <div class="modal-overlay" id="rec-modal">
+    <div class="modal">
+      <div class="modal-title">🔄 Add Recurring Service</div>
+      <div class="mrow">
+        <div class="mfield"><label>Service Name</label><input id="rc-name" placeholder="e.g. Restroom Trailer Pumping"/></div>
+        <div class="mfield"><label>Vendor</label><input id="rc-vendor" placeholder="e.g. Clean Co."/></div>
+      </div>
+      <div class="mrow">
+        <div class="mfield"><label>Frequency</label>
+          <select id="rc-freq">
+            <option value="Daily">Daily</option>
+            <option value="3x Week">3x per Week</option>
+            <option value="2x Week">2x per Week</option>
+            <option value="Weekly">Weekly</option>
+            <option value="Biweekly">Every 2 Weeks</option>
+            <option value="Monthly">Monthly</option>
+          </select>
+        </div>
+        <div class="mfield"><label>Emoji / Icon</label>
+          <select id="rc-emoji">
+            <option value="🚽">🚽 Restroom</option>
+            <option value="🧹">🧹 Cleaning</option>
+            <option value="🗑">🗑 Trash</option>
+            <option value="🔧">🔧 Maintenance</option>
+            <option value="🚚">🚚 Delivery</option>
+            <option value="🔐">🔐 Security</option>
+            <option value="🌿">🌿 Landscaping</option>
+            <option value="💧">💧 Water</option>
+            <option value="⚡">⚡ Electrical</option>
+            <option value="🍕">🍕 Food / Catering</option>
+          </select>
+        </div>
+      </div>
+      <div class="mrow">
+        <div class="mfield"><label>Last Completed</label><input id="rc-last" type="date"/></div>
+        <div class="mfield"><label>Contact / Phone</label><input id="rc-contact" placeholder="e.g. (555) 123-4567"/></div>
+      </div>
+      <div class="mfield"><label>Notes</label><textarea id="rc-notes" placeholder="Special instructions, access info, what to check…" style="min-height:60px;"></textarea></div>
+      <div class="modal-btns">
+        <button class="mbtn-cancel" onclick="closeRecModal()">Cancel</button>
+        <button class="mbtn-save" onclick="saveRec()">Save Service</button>
+      </div>
+    </div>
+  </div>
+
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// CLOCK
+function tick(){
+  const n=new Date();
+  document.getElementById('live-time').textContent=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
+  document.getElementById('live-date').textContent=n.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+}
+tick(); setInterval(tick,1000);
+
+// TOAST
+function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
+
+// TABS
+function switchPage(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// QUOTES
+const quotes=[
+  {q:'"She believed she could, so she did."',a:'— R.S. Grey'},
+  {q:'"The secret of getting ahead is getting started."',a:'— Mark Twain'},
+  {q:'"Done is better than perfect."',a:'— Sheryl Sandberg'},
+  {q:'"Well-behaved women seldom make history."',a:'— Laurel Thatcher Ulrich'},
+  {q:'"You are capable of more than you know."',a:'— Glinda the Good Witch'},
+  {q:'"Believe you can and you\'re halfway there."',a:'— Theodore Roosevelt'},
+  {q:'"The woman who follows the crowd will usually go no further than the crowd."',a:'— Albert Einstein'},
+  {q:'"You didn\'t come this far to only come this far."',a:'— Unknown'},
+];
+let qi=0;
+function newQuote(){qi=(qi+1)%quotes.length;document.getElementById('mquote').textContent=quotes[qi].q;document.getElementById('mattr').textContent=quotes[qi].a;}
+function newQuote2(){qi=(qi+1)%quotes.length;document.getElementById('mquote2').textContent=quotes[qi].q;document.getElementById('mattr2').textContent=quotes[qi].a;}
+
+// TASKS
+let tasks=[
+  {id:1,text:'Confirm apartment assignments for crew',tag:'h',done:false},
+  {id:2,text:'Order coffee maker + supplies',tag:'s',done:false},
+  {id:3,text:'Review incoming crew manifest',tag:'w',done:true},
+  {id:4,text:'Verify office equipment delivery',tag:'s',done:false},
+  {id:5,text:'Set up wifi at site offices',tag:'w',done:false},
+];
+let nid=6;
+const tagMap={w:{cls:'tw',lbl:'Work'},s:{cls:'ts',lbl:'Supply'},h:{cls:'th',lbl:'Housing'},p:{cls:'tp',lbl:'Personal'}};
+
+function renderTasks(){
+  const l=document.getElementById('tasklist');
+  l.innerHTML='';
+  tasks.forEach(t=>{
+    const tm=tagMap[t.tag]||tagMap.w;
+    const d=document.createElement('div');
+    d.className='ci-item'+(t.done?' done':'');
+    d.innerHTML=`<div class="cbox">${t.done?'✓':''}</div><div class="itxt">${t.text}</div><span class="itag ${tm.cls}">${tm.lbl}</span><button class="delbtn" onclick="event.stopPropagation();delTask(${t.id})">✕</button>`;
+    d.onclick=()=>toggleTask(t.id);
+    l.appendChild(d);
+  });
+  const done=tasks.filter(t=>t.done).length,total=tasks.length,pct=total?Math.round(done/total*100):0;
+  document.getElementById('pfill').style.width=pct+'%';
+  document.getElementById('ptxt').textContent=`${done} of ${total} done`;
+  document.getElementById('stat-done').textContent=done;
+  document.getElementById('stat-left').textContent=total-done;
+}
+function addTask(){const i=document.getElementById('new-task'),tag=document.getElementById('task-tag').value,txt=i.value.trim();if(!txt)return;tasks.push({id:nid++,text:txt,tag,done:false});i.value='';renderTasks();showToast('✅ Task added!');}
+function toggleTask(id){const t=tasks.find(t=>t.id===id);if(t){t.done=!t.done;renderTasks();}if(t&&t.done)showToast('🎉 Done!');}
+function delTask(id){tasks=tasks.filter(t=>t.id!==id);renderTasks();}
+function quickTask(txt,tag){tasks.push({id:nid++,text:txt,tag,done:false});renderTasks();showToast('⚡ Added: '+txt);}
+renderTasks();
+
+// MASTER CHECKLIST
+const masterSections=[
+  {title:'🏠 Housing & Apartments',items:['Confirm unit count vs crew headcount','Assign each worker to a unit','Verify beds, linens, towels in each unit','Check all appliances work','Ensure keys / access cards ready','Test smoke detectors','Confirm parking situation']},
+  {title:'🖥 Work Offices',items:['Confirm office space square footage','Desk and chair count vs crew','Computer / monitor setup','Printer and supplies','Whiteboard / meeting space','Signage and site IDs','Emergency exit routes posted']},
+  {title:'📦 Supplies & Equipment',items:['PPE inventory complete','Tool kits and equipment on site','First aid kits stocked','Office supplies (paper, pens, folders)','Cleaning supplies stocked','Trash and recycling setup']},
+  {title:'☕ Kitchen & Break Room',items:['Coffee maker installed and tested','Fridge / microwave working','Coffee, tea, creamer stocked','Paper towels, dish soap','Dining furniture in place','Water cooler or filtered water']},
+  {title:'🌐 Connectivity & Comms',items:['Internet / wifi active and tested','Phone lines confirmed','Emergency contact list posted','Site manager contact distributed','IT support contact on file']},
+  {title:'📋 Admin & Onboarding',items:['Crew manifest confirmed','Badge / access system active','HR paperwork ready','Safety orientation scheduled','Site rules posted','Health and safety protocols briefed']},
+];
+let masterState={};
+
+function renderMaster(){
+  const container=document.getElementById('master-list');
+  container.innerHTML='';
+  let total=0,done=0;
+  masterSections.forEach((sec,si)=>{
+    const col=document.createElement('div');
+    col.innerHTML=`<div class="tsec-title">${sec.title}</div>`;
+    sec.items.forEach((item,ii)=>{
+      const key=`${si}-${ii}`;
+      if(!masterState[key])masterState[key]=false;
+      if(masterState[key])done++;
+      total++;
+      const d=document.createElement('div');
+      d.className='titem'+(masterState[key]?' done':'');
+      d.innerHTML=`<div class="tcbox">${masterState[key]?'✓':''}</div><div class="titxt">${item}</div>`;
+      d.onclick=()=>{masterState[key]=!masterState[key];renderMaster();if(masterState[key])showToast('✅ Checked off!');};
+      col.appendChild(d);
+    });
+    container.appendChild(col);
+  });
+  const pct=total?Math.round(done/total*100):0;
+  document.getElementById('mpfill').style.width=pct+'%';
+  document.getElementById('mptxt').textContent=`${pct}% complete — ${done} of ${total} items`;
+}
+renderMaster();
+
+// ORDERS
+const orders=[
+  {item:'Coffee maker (commercial)',cat:'Kitchen',vendor:'Amazon Business',qty:2,eta:'Jun 18',status:'ordered'},
+  {item:'Office chairs',cat:'Office',vendor:'Staples Contract',qty:24,eta:'Jun 20',status:'shipped'},
+  {item:'Work desks',cat:'Office',vendor:'Staples Contract',qty:12,eta:'Jun 20',status:'shipped'},
+  {item:'PPE kits',cat:'Safety',vendor:'Grainger',qty:50,eta:'Jun 15',status:'arrived'},
+  {item:'Bed linens (sets)',cat:'Housing',vendor:'Bulk Barn Supplies',qty:48,eta:'Jun 22',status:'ordered'},
+  {item:'Wifi routers',cat:'IT',vendor:'CDW',qty:4,eta:'TBD',status:'needed'},
+  {item:'First aid kits',cat:'Safety',vendor:'Grainger',qty:6,eta:'Jun 15',status:'arrived'},
+  {item:'Kitchen supplies',cat:'Kitchen',vendor:'Restaurant Depot',qty:1,eta:'Jun 19',status:'ordered'},
+];
+const stCls={ordered:'o-ordered',shipped:'o-shipped',arrived:'o-arrived',needed:'o-needed'};
+const stLbl={ordered:'Ordered',shipped:'Shipped',arrived:'Arrived',needed:'Needed'};
+
+function renderOrders(){
+  const tb=document.getElementById('order-tbody');
+  tb.innerHTML='';
+  orders.forEach(o=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td><strong>${o.item}</strong></td><td>${o.cat}</td><td>${o.vendor}</td><td>${o.qty}</td><td>${o.eta}</td><td><span class="ostatus ${stCls[o.status]}">${stLbl[o.status]}</span></td>`;
+    tb.appendChild(tr);
+  });
+}
+renderOrders();
+
+function addOrderRow(){
+  const item=prompt('Item name?');
+  if(!item)return;
+  const vendor=prompt('Vendor?')||'TBD';
+  const qty=prompt('Quantity?')||'1';
+  orders.push({item,cat:'General',vendor,qty,eta:'TBD',status:'needed'});
+  renderOrders();
+  showToast('📦 Item added to orders!');
+}
+
+// HOUSING
+const units=[
+  {num:'101',name:'James R.',status:'occupied'},{num:'102',name:'Maria S.',status:'occupied'},
+  {num:'103',name:'',status:'pending'},{num:'104',name:'Derek M.',status:'occupied'},
+  {num:'105',name:'',status:'empty'},{num:'106',name:'Sarah K.',status:'occupied'},
+  {num:'107',name:'',status:'pending'},{num:'108',name:'Tom B.',status:'occupied'},
+  {num:'109',name:'',status:'empty'},{num:'110',name:'Chris P.',status:'occupied'},
+  {num:'111',name:'',status:'empty'},{num:'112',name:'Lisa N.',status:'occupied'},
+];
+function renderHousing(){
+  const g=document.getElementById('unit-grid');
+  g.innerHTML='';
+  units.forEach(u=>{
+    const d=document.createElement('div');
+    d.className=`unit ${u.status}`;
+    d.innerHTML=`<div class="unit-num">Unit ${u.num}</div><div class="unit-name">${u.name||'—'}</div><div class="unit-status">${u.status}</div>`;
+    d.onclick=()=>showToast(`Unit ${u.num}: ${u.status}`);
+    g.appendChild(d);
+  });
+}
+renderHousing();
+
+// FOCUS TIMER
+let fInterval=null,fRemaining=25*60,fTotal=25*60,fRunning=false;
+function fmt(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
+function updateFocusUI(){
+  document.getElementById('fdisplay').textContent=fmt(fRemaining);
+  const pct=Math.round(fRemaining/fTotal*100);
+  document.getElementById('ffill').style.width=pct+'%';
+  document.getElementById('fpct').textContent=pct+'%';
+}
+function startFocus(){
+  if(fRunning){clearInterval(fInterval);fRunning=false;document.getElementById('fstartbtn').textContent='▶ Resume';document.getElementById('flbl').textContent='Paused';return;}
+  fRunning=true;document.getElementById('fstartbtn').textContent='⏸ Pause';document.getElementById('flbl').textContent='Focus mode ON 🔥';
+  fInterval=setInterval(()=>{
+    if(fRemaining<=0){clearInterval(fInterval);fRunning=false;document.getElementById('flbl').textContent='🎉 Done!';document.getElementById('fstartbtn').textContent='▶ Start';showToast('⏱ Focus session complete! Great work, Oceanna!');return;}
+    fRemaining--;updateFocusUI();
+  },1000);
+}
+function resetFocus(){
+  clearInterval(fInterval);fRunning=false;
+  const m=parseInt(document.getElementById('fmins').value);
+  fTotal=m*60;fRemaining=fTotal;
+  document.getElementById('flbl').textContent='Ready to focus';
+  document.getElementById('fstartbtn').textContent='▶ Start';
+  document.getElementById('fstartlbl').textContent=m+' min';
+  updateFocusUI();
+}
+
+// NOTES
+const nk='oceanna-notes-v2';
+try{const s=localStorage.getItem(nk);if(s)document.getElementById('ntarea').value=s;}catch(e){}
+function saveNote(){
+  const v=document.getElementById('ntarea').value;
+  try{localStorage.setItem(nk,v);}catch(e){}
+  const s=document.getElementById('nsaved');s.classList.add('show');setTimeout(()=>s.classList.remove('show'),2000);
+  showToast('📝 Note saved!');
+}
+
+// AI
+const SYS=`You are Aria, the personal AI assistant for Oceanna Chamberlain. She is a 26-year-old traveling logistics and supply chain specialist. She travels to job sites — currently heading to Virginia for 6 months — and sets up EVERYTHING from scratch before workers arrive: apartments, work offices, all supplies, equipment, kitchen setup, coffee makers, internet, access cards, onboarding materials. She is a one-woman base camp commander.
+
+Personality: Be warm, practical, and energetic — matching Oceanna's vibrant, capable personality. Keep responses concise and actionable (2-4 sentences unless she asks for more). Use occasional emojis. Help her with task management, supply chain questions, drafting vendor messages, prioritizing her day, logistics planning, or anything she needs. You know she's amazing at her job and you support her like a smart colleague who always has her back.`;
+
+async function callAI(userMsg){
+  const msgsEl=document.getElementById('ai-msgs'),typ=document.getElementById('typing');
+  const ub=document.createElement('div');
+  ub.className='msg u';
+  ub.innerHTML=`<div class="mavatar" style="background:var(--coral);color:white;">O</div><div class="bubble">${userMsg}</div>`;
+  msgsEl.appendChild(ub);
+  typ.classList.add('show');msgsEl.scrollTop=msgsEl.scrollHeight;
+  const history=[];
+  msgsEl.querySelectorAll('.msg').forEach(b=>{
+    const role=b.classList.contains('u')?'user':'assistant';
+    const text=b.querySelector('.bubble')?.textContent||'';
+    if(text)history.push({role,content:text});
+  });
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:SYS,messages:history.slice(0,-1).concat([{role:'user',content:userMsg}]).slice(-12)})});
+    const data=await res.json();
+    const reply=data.content?.[0]?.text||'Had a hiccup! Try again? 😅';
+    typ.classList.remove('show');
+    const ab=document.createElement('div');
+    ab.className='msg ai';
+    ab.innerHTML=`<div class="mavatar" style="background:linear-gradient(135deg,#00B4D8,#06D6A0);color:#03045E;">A</div><div class="bubble">${reply}</div>`;
+    msgsEl.appendChild(ab);msgsEl.scrollTop=msgsEl.scrollHeight;
+    // auto-detect task
+    const low=userMsg.toLowerCase();
+    if((low.includes('add')||low.includes('remind')||low.includes('task'))&&userMsg.length>6&&userMsg.length<80){
+      const clean=userMsg.replace(/add task[:\s]?|remind me to|add[:\s]/gi,'').trim();
+      if(clean.length>4){tasks.push({id:nid++,text:clean,tag:'w',done:false});renderTasks();}
+    }
+  }catch(e){
+    typ.classList.remove('show');
+    const eb=document.createElement('div');
+    eb.className='msg ai';
+    eb.innerHTML=`<div class="mavatar" style="background:linear-gradient(135deg,#00B4D8,#06D6A0);color:#03045E;">A</div><div class="bubble">Can't connect right now. Try again in a sec 🔌</div>`;
+    msgsEl.appendChild(eb);msgsEl.scrollTop=msgsEl.scrollHeight;
+  }
+}
+
+function sendAI(){const i=document.getElementById('ai-inp'),m=i.value.trim();if(!m)return;i.value='';callAI(m);}
+function ariaPrompt(msg){switchPage('aria',document.querySelectorAll('.nav-tab')[4]);document.getElementById('ai-inp').value=msg;sendAI();}
+
+// VOICE
+const vbtn=document.getElementById('vbtn');
+let rec=null;
+if('webkitSpeechRecognition' in window||'SpeechRecognition' in window){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  rec=new SR();rec.continuous=false;rec.interimResults=false;rec.lang='en-US';
+  rec.onresult=e=>{const t=e.results[0][0].transcript;vbtn.classList.remove('listening');vbtn.textContent='🎤';document.getElementById('ai-inp').value=t;sendAI();};
+  rec.onerror=()=>{vbtn.classList.remove('listening');vbtn.textContent='🎤';showToast('🎤 Mic unavailable. Try typing.');};
+  rec.onend=()=>{vbtn.classList.remove('listening');vbtn.textContent='🎤';};
+  vbtn.onclick=()=>{if(vbtn.classList.contains('listening')){rec.stop();}else{rec.start();vbtn.classList.add('listening');vbtn.textContent='🔴';showToast('🎤 Listening…');}};
+}else{vbtn.onclick=()=>showToast('🎤 Voice input needs Chrome browser.');}
+
+// VENDOR MANAGER
+const catEmoji={supplies:'📦',housing:'🏠',it:'💻',kitchen:'☕',furniture:'🪑',safety:'🦺',transport:'🚚',other:'🤝'};
+const catLabel={supplies:'Supplies',housing:'Housing',it:'IT / Tech',kitchen:'Kitchen',furniture:'Furniture',safety:'Safety / PPE',transport:'Transport',other:'Other'};
+
+let vendors=[
+  {id:1,name:'Grainger',cat:'safety',contact:'Mike Torres',phone:'(800) 472-4643',email:'mkt@grainger.com',status:'active',contract:'PO-2025-001',date:'2025-07-10',notes:'PPE, first aid, safety gear. Reliable. Net 30 payment.'},
+  {id:2,name:'Staples Business',cat:'furniture',contact:'Dana Wells',phone:'(855) 782-7537',email:'dana@staples.com',status:'active',contract:'PO-2025-002',date:'2025-07-15',notes:'Office desks, chairs, whiteboards. Delivery confirmed June 20.'},
+  {id:3,name:'Amazon Business',cat:'kitchen',contact:'Account Manager',phone:'',email:'biz@amazon.com',status:'active',contract:'',date:'2025-06-18',notes:'Coffee makers, kitchen supplies, miscellaneous. Fast shipping.'},
+  {id:4,name:'CDW',cat:'it',contact:'Sarah Kim',phone:'(800) 200-4239',email:'sarah.kim@cdw.com',status:'issue',contract:'PO-2025-003',date:'2025-06-20',notes:'Wifi routers and networking gear. ETA still TBD — follow up needed ASAP.'},
+  {id:5,name:'Bulk Barn Supplies',cat:'housing',contact:'Derek Reeves',phone:'(555) 209-4411',email:'derek@bulkbarn.com',status:'pending',contract:'PO-2025-004',date:'2025-06-22',notes:'Bed linens, towels, pillows for all 48 units. Awaiting confirmation.'},
+  {id:6,name:'Restaurant Depot',cat:'kitchen',contact:'',phone:'',email:'',status:'pending',contract:'',date:'2025-06-19',notes:'Break room and kitchen setup supplies. First order pending.'},
+];
+let vid=7;
+let vendorFilter='all';
+let editingVendorId=null;
+
+function renderVendors(){
+  const g=document.getElementById('vendor-grid');
+  g.innerHTML='';
+  const filtered=vendors.filter(v=>{
+    if(vendorFilter==='all')return true;
+    if(['active','pending','issue','inactive'].includes(vendorFilter))return v.status===vendorFilter;
+    return v.cat===vendorFilter;
+  });
+  if(filtered.length===0){
+    g.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:#aaa;font-size:.85rem;">No vendors found. Add one above ↑</div>';
+  }
+  filtered.forEach(v=>{
+    const sLbl={active:'Active',pending:'Pending',issue:'Has Issue',inactive:'Inactive'};
+    const sCls={active:'vs-active',pending:'vs-pending',issue:'vs-issue',inactive:'vs-inactive'};
+    const d=document.createElement('div');
+    d.className=`vcard vc-${v.status}`;
+    d.innerHTML=`
+      <div class="vcard-top">
+        <div class="vcard-emoji">${catEmoji[v.cat]||'🤝'}</div>
+        <div style="flex:1;min-width:0;">
+          <div class="vcard-name">${v.name}</div>
+          <div class="vcard-cat">${catLabel[v.cat]||v.cat}</div>
+        </div>
+        <span class="vstatus ${sCls[v.status]}">${sLbl[v.status]}</span>
+      </div>
+      <div class="vcard-details">
+        ${v.contact?`<div class="vdetail"><span class="vdetail-icon">👤</span>${v.contact}</div>`:''}
+        ${v.phone?`<div class="vdetail"><span class="vdetail-icon">📞</span>${v.phone}</div>`:''}
+        ${v.email?`<div class="vdetail"><span class="vdetail-icon">📧</span>${v.email}</div>`:''}
+        ${v.contract?`<div class="vdetail"><span class="vdetail-icon">📄</span>${v.contract}</div>`:''}
+        ${v.date?`<div class="vdetail"><span class="vdetail-icon">📅</span>Next: ${v.date}</div>`:''}
+        ${v.notes?`<div class="vdetail" style="margin-top:4px;color:#777;font-style:italic;font-size:.75rem;"><span class="vdetail-icon">💬</span>${v.notes.length>60?v.notes.slice(0,60)+'…':v.notes}</div>`:''}
+      </div>
+      <div class="vcard-footer">
+        ${v.phone?`<button class="vaction va-call" onclick="event.stopPropagation();window.location='tel:${v.phone}'">📞 Call</button>`:''}
+        ${v.email?`<button class="vaction va-call" onclick="event.stopPropagation();window.location='mailto:${v.email}'" style="background:#e8fdf5;color:#059669;">✉️ Email</button>`:''}
+        <button class="vaction va-note" onclick="event.stopPropagation();editVendor(${v.id})">✏️ Edit</button>
+        ${v.status!=='issue'?`<button class="vaction va-flag" onclick="event.stopPropagation();flagVendor(${v.id})">🚩 Flag</button>`:`<button class="vaction" style="background:#e8fdf5;color:#059669;" onclick="event.stopPropagation();resolveVendor(${v.id})">✅ Resolve</button>`}
+      </div>`;
+    g.appendChild(d);
+  });
+  // update stats
+  document.getElementById('vs-total').textContent=vendors.length;
+  document.getElementById('vs-active').textContent=vendors.filter(v=>v.status==='active').length;
+  document.getElementById('vs-pending').textContent=vendors.filter(v=>v.status==='pending').length;
+  document.getElementById('vs-issue').textContent=vendors.filter(v=>v.status==='issue').length;
+}
+
+function filterVendors(f,btn){
+  vendorFilter=f;
+  document.querySelectorAll('.vfilter').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderVendors();
+}
+
+function openVendorModal(id){
+  editingVendorId=id||null;
+  const v=id?vendors.find(v=>v.id===id):null;
+  document.getElementById('v-name').value=v?v.name:'';
+  document.getElementById('v-cat').value=v?v.cat:'supplies';
+  document.getElementById('v-contact').value=v?v.contact:'';
+  document.getElementById('v-phone').value=v?v.phone:'';
+  document.getElementById('v-email').value=v?v.email:'';
+  document.getElementById('v-status').value=v?v.status:'active';
+  document.getElementById('v-contract').value=v?v.contract:'';
+  document.getElementById('v-date').value=v?v.date:'';
+  document.getElementById('v-notes').value=v?v.notes:'';
+  document.getElementById('vendor-modal').classList.add('show');
+}
+function closeVendorModal(){document.getElementById('vendor-modal').classList.remove('show');editingVendorId=null;}
+function editVendor(id){openVendorModal(id);}
+function flagVendor(id){const v=vendors.find(v=>v.id===id);if(v){v.status='issue';renderVendors();showToast('🚩 Vendor flagged for attention');}}
+function resolveVendor(id){const v=vendors.find(v=>v.id===id);if(v){v.status='active';renderVendors();showToast('✅ Vendor issue resolved!');}}
+
+function saveVendor(){
+  const name=document.getElementById('v-name').value.trim();
+  if(!name){showToast('⚠️ Vendor name required');return;}
+  const data={
+    name,cat:document.getElementById('v-cat').value,
+    contact:document.getElementById('v-contact').value,
+    phone:document.getElementById('v-phone').value,
+    email:document.getElementById('v-email').value,
+    status:document.getElementById('v-status').value,
+    contract:document.getElementById('v-contract').value,
+    date:document.getElementById('v-date').value,
+    notes:document.getElementById('v-notes').value,
+  };
+  if(editingVendorId){
+    const idx=vendors.findIndex(v=>v.id===editingVendorId);
+    if(idx>=0)vendors[idx]={...vendors[idx],...data};
+    showToast('✅ Vendor updated!');
+  }else{
+    vendors.push({id:vid++,...data});
+    showToast('🤝 Vendor added!');
+  }
+  closeVendorModal();
+  renderVendors();
+}
+
+// close modal on overlay click
+document.getElementById('vendor-modal').addEventListener('click',function(e){if(e.target===this)closeVendorModal();});
+
+renderVendors();
+
+// ── EMERGENT PROCUREMENT ──
+let emgItems=[
+  {id:1,item:'Backup generator (portable)',priority:'critical',qty:'1 unit',requester:'Site Manager Dave',date:'2025-06-12T08:00',reason:'Main power tripped twice this week. Crew cannot work without backup.',status:'sourcing'},
+  {id:2,item:'Extra PPE kits (hard hats + vests)',priority:'high',qty:'12 sets',requester:'Safety Officer',date:'2025-06-13T12:00',reason:'New crew arriving earlier than expected. Not enough PPE on hand.',status:'ordered'},
+  {id:3,item:'Industrial extension cords (50ft)',priority:'normal',qty:'6',requester:'Lead Electrician',date:'2025-06-14T17:00',reason:'Office setup needs more power access points.',status:'new'},
+];
+let emgId=4;
+let editEmgId=null;
+
+const emgStatusLabel={new:'New',sourcing:'Sourcing',ordered:'Ordered',arrived:'Arrived'};
+const emgStatusCls={new:'es-new',sourcing:'es-sourcing',ordered:'es-ordered',arrived:'es-arrived'};
+const emgStatusFlow={new:'sourcing',sourcing:'ordered',ordered:'arrived'};
+const emgStatusNext={new:'Mark Sourcing',sourcing:'Mark Ordered',ordered:'Mark Arrived'};
+
+function renderEmg(){
+  const list=document.getElementById('emg-list');
+  list.innerHTML='';
+  if(emgItems.length===0){list.innerHTML='<div style="text-align:center;padding:40px;color:#aaa;font-size:.85rem;">No open requests — great job staying ahead! 🎉</div>';return;}
+  // sort: critical first, then high, then normal
+  const order={critical:0,high:1,normal:2};
+  const sorted=[...emgItems].sort((a,b)=>order[a.priority]-order[b.priority]);
+  sorted.forEach(e=>{
+    const d=document.createElement('div');
+    d.className=`emg-card ep-${e.priority}`;
+    const dateStr=e.date?new Date(e.date).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):'';
+    d.innerHTML=`
+      <div class="emg-top">
+        <span class="emg-priority">${e.priority==='critical'?'🔴 Critical':e.priority==='high'?'🟡 High':'🔵 Normal'}</span>
+        <div class="emg-title">${e.item}</div>
+        <span class="emg-status-badge ${emgStatusCls[e.status]}">${emgStatusLabel[e.status]}</span>
+      </div>
+      <div class="emg-meta">
+        ${e.qty?`<span>📦 ${e.qty}</span>`:''}
+        ${e.requester?`<span>👤 ${e.requester}</span>`:''}
+        ${dateStr?`<span>⏰ Needed by ${dateStr}</span>`:''}
+      </div>
+      ${e.reason?`<div style="font-size:.78rem;color:#777;font-style:italic;margin-bottom:10px;padding:8px 10px;background:#f9f9f9;border-radius:8px;">"${e.reason}"</div>`:''}
+      <div class="emg-actions">
+        ${e.status!=='arrived'?`<button class="emg-btn" style="background:#e8fdf5;color:#059669;" onclick="advanceEmg(${e.id})">${emgStatusNext[e.status]} →</button>`:'<button class="emg-btn" style="background:#e8fdf5;color:#059669;" disabled>✅ Arrived</button>'}
+        <button class="emg-btn" style="background:#f5faff;color:var(--ocean);" onclick="editEmg(${e.id})">✏️ Edit</button>
+        <button class="emg-btn" style="background:#fff0f0;color:var(--coral);" onclick="deleteEmg(${e.id})">🗑 Remove</button>
+      </div>`;
+    list.appendChild(d);
+  });
+  document.getElementById('emg-new').textContent=emgItems.filter(e=>e.status==='new').length;
+  document.getElementById('emg-sourcing').textContent=emgItems.filter(e=>e.status==='sourcing').length;
+  document.getElementById('emg-ordered').textContent=emgItems.filter(e=>e.status==='ordered').length;
+  document.getElementById('emg-arrived').textContent=emgItems.filter(e=>e.status==='arrived').length;
+}
+
+function advanceEmg(id){
+  const e=emgItems.find(e=>e.id===id);
+  if(e&&emgStatusFlow[e.status]){e.status=emgStatusFlow[e.status];renderEmg();showToast('📋 Status updated: '+emgStatusLabel[e.status]);}
+  else if(e&&e.status==='arrived'){showToast('✅ Already arrived!');}
+}
+function deleteEmg(id){if(confirm('Remove this request?')){emgItems=emgItems.filter(e=>e.id!==id);renderEmg();showToast('🗑 Request removed');}}
+function editEmg(id){openEmgModal(id);}
+
+function openEmgModal(id){
+  editEmgId=id||null;
+  const e=id?emgItems.find(e=>e.id===id):null;
+  document.getElementById('em-item').value=e?e.item:'';
+  document.getElementById('em-priority').value=e?e.priority:'critical';
+  document.getElementById('em-qty').value=e?e.qty:'';
+  document.getElementById('em-requester').value=e?e.requester:'';
+  document.getElementById('em-date').value=e?e.date:'';
+  document.getElementById('em-reason').value=e?e.reason:'';
+  document.getElementById('em-status').value=e?e.status:'new';
+  document.getElementById('emg-modal').classList.add('show');
+}
+function closeEmgModal(){document.getElementById('emg-modal').classList.remove('show');editEmgId=null;}
+function saveEmg(){
+  const item=document.getElementById('em-item').value.trim();
+  if(!item){showToast('⚠️ Item name required');return;}
+  const data={item,priority:document.getElementById('em-priority').value,qty:document.getElementById('em-qty').value,requester:document.getElementById('em-requester').value,date:document.getElementById('em-date').value,reason:document.getElementById('em-reason').value,status:document.getElementById('em-status').value};
+  if(editEmgId){const idx=emgItems.findIndex(e=>e.id===editEmgId);if(idx>=0)emgItems[idx]={...emgItems[idx],...data};showToast('✅ Request updated!');}
+  else{emgItems.push({id:emgId++,...data});showToast('🚨 Emergency request logged!');}
+  closeEmgModal();renderEmg();
+}
+document.getElementById('emg-modal').addEventListener('click',function(e){if(e.target===this)closeEmgModal();});
+renderEmg();
+
+// ── RECURRING SERVICES ──
+const today=new Date();today.setHours(0,0,0,0);
+
+function addDays(dateStr,n){const d=new Date(dateStr);d.setDate(d.getDate()+n);return d;}
+function freqDays(f){return{Daily:1,'3x Week':2,'2x Week':3,Weekly:7,Biweekly:14,Monthly:30}[f]||7;}
+function getRecStatus(svc){
+  if(!svc.last)return'overdue';
+  const last=new Date(svc.last);last.setHours(0,0,0,0);
+  const nextDue=addDays(svc.last,freqDays(svc.freq));
+  nextDue.setHours(0,0,0,0);
+  const diff=Math.floor((nextDue-today)/(1000*60*60*24));
+  if(diff<0)return'overdue';
+  if(diff===0)return'due';
+  return'ok';
+}
+function getNextDue(svc){
+  if(!svc.last)return'Overdue — never logged';
+  const next=addDays(svc.last,freqDays(svc.freq));
+  const diff=Math.floor((next-today)/(1000*60*60*24));
+  if(diff<0)return`Overdue by ${Math.abs(diff)} day${Math.abs(diff)>1?'s':''}`;
+  if(diff===0)return'Due TODAY';
+  return`Due in ${diff} day${diff>1?'s':''}`;
+}
+
+let recServices=[
+  {id:1,name:'Restroom Trailer Pumping',vendor:'Clean Sweep Co.',freq:'3x Week',emoji:'🚽',last:'2025-06-10',contact:'(555) 301-7722',notes:'Mon / Wed / Fri. Driver is Carlos. Gate code: 4421.'},
+  {id:2,name:'Site Trash Removal',vendor:'Waste Pro',freq:'2x Week',emoji:'🗑',last:'2025-06-09',contact:'(555) 448-0091',notes:'Tue / Fri. Leave gate unlocked by 6am.'},
+  {id:3,name:'Office Cleaning',vendor:'SparkClean Services',freq:'Weekly',emoji:'🧹',last:'2025-06-06',contact:'(555) 882-3310',notes:'Every Friday evening after 5pm. Provide access badge.'},
+  {id:4,name:'Water Cooler Refill',vendor:'Primo Water',freq:'Weekly',emoji:'💧',last:'2025-06-07',contact:'(800) 201-6218',notes:'Saturdays. Check levels mid-week — request extra if needed.'},
+  {id:5,name:'Security Patrol Check-in',vendor:'SiteShield Security',freq:'Daily',emoji:'🔐',last:'2025-06-11',contact:'(555) 700-4400',notes:'Daily 10pm walkthrough. Confirm in logbook.'},
+];
+let recId=6;
+let editRecId=null;
+
+function renderRec(){
+  const g=document.getElementById('rec-grid');
+  g.innerHTML='';
+  let ok=0,due=0,overdue=0;
+  recServices.forEach(svc=>{
+    const st=getRecStatus(svc);
+    const nextLabel=getNextDue(svc);
+    if(st==='ok')ok++;else if(st==='due')due++;else overdue++;
+    const d=document.createElement('div');
+    d.className=`rec-card rs-${st}`;
+    d.innerHTML=`
+      <div class="rec-top">
+        <div class="rec-emoji">${svc.emoji}</div>
+        <div>
+          <div class="rec-name">${svc.name}</div>
+          <div class="rec-vendor">${svc.vendor}</div>
+        </div>
+        <span class="rec-status-badge">${st==='ok'?'On Schedule':st==='due'?'Due Today':'OVERDUE'}</span>
+      </div>
+      <div class="rec-details">
+        <div class="rec-detail"><div class="rec-detail-label">Frequency</div><div class="rec-detail-val">${svc.freq}</div></div>
+        <div class="rec-detail"><div class="rec-detail-label">Next Service</div><div class="rec-detail-val" style="color:${st==='overdue'?'#c0392b':st==='due'?'#b8860b':'#059669'}">${nextLabel}</div></div>
+        <div class="rec-detail"><div class="rec-detail-label">Last Done</div><div class="rec-detail-val">${svc.last?new Date(svc.last).toLocaleDateString('en-US',{month:'short',day:'numeric'}):'Never'}</div></div>
+        <div class="rec-detail"><div class="rec-detail-label">Contact</div><div class="rec-detail-val">${svc.contact||'—'}</div></div>
+      </div>
+      ${svc.notes?`<div style="font-size:.74rem;color:#777;margin-bottom:10px;padding:7px 9px;background:#f7fbff;border-radius:8px;">${svc.notes}</div>`:''}
+      <div class="rec-footer">
+        <button class="rec-btn rb-done" onclick="markRecDone(${svc.id})">✅ Mark Done</button>
+        <button class="rec-btn rb-edit" onclick="openRecModal(${svc.id})">✏️ Edit</button>
+        ${svc.contact?`<button class="rec-btn rb-skip" onclick="window.location='tel:${svc.contact}'">📞 Call</button>`:''}
+      </div>`;
+    g.appendChild(d);
+  });
+  document.getElementById('rs-ok').textContent=ok;
+  document.getElementById('rs-due').textContent=due;
+  document.getElementById('rs-overdue').textContent=overdue;
+  document.getElementById('rs-total').textContent=recServices.length;
+}
+
+function markRecDone(id){
+  const s=recServices.find(s=>s.id===id);
+  if(s){s.last=new Date().toISOString().split('T')[0];renderRec();showToast('✅ Service marked complete!');}
+}
+function openRecModal(id){
+  editRecId=id||null;
+  const s=id?recServices.find(s=>s.id===id):null;
+  document.getElementById('rc-name').value=s?s.name:'';
+  document.getElementById('rc-vendor').value=s?s.vendor:'';
+  document.getElementById('rc-freq').value=s?s.freq:'Weekly';
+  document.getElementById('rc-emoji').value=s?s.emoji:'🔧';
+  document.getElementById('rc-last').value=s?s.last:'';
+  document.getElementById('rc-contact').value=s?s.contact:'';
+  document.getElementById('rc-notes').value=s?s.notes:'';
+  document.getElementById('rec-modal').classList.add('show');
+}
+function closeRecModal(){document.getElementById('rec-modal').classList.remove('show');editRecId=null;}
+function saveRec(){
+  const name=document.getElementById('rc-name').value.trim();
+  if(!name){showToast('⚠️ Service name required');return;}
+  const data={name,vendor:document.getElementById('rc-vendor').value,freq:document.getElementById('rc-freq').value,emoji:document.getElementById('rc-emoji').value,last:document.getElementById('rc-last').value,contact:document.getElementById('rc-contact').value,notes:document.getElementById('rc-notes').value};
+  if(editRecId){const idx=recServices.findIndex(s=>s.id===editRecId);if(idx>=0)recServices[idx]={...recServices[idx],...data};showToast('✅ Service updated!');}
+  else{recServices.push({id:recId++,...data});showToast('🔄 Recurring service added!');}
+  closeRecModal();renderRec();
+}
+document.getElementById('rec-modal').addEventListener('click',function(e){if(e.target===this)closeRecModal();});
+renderRec();
+</script>
+</body>
+</html>

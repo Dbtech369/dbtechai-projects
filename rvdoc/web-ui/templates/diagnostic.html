@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>RVDoc – Diagnostic Mode</title>
+  <style>
+    body {font-family: Arial, sans-serif; margin: 2em;}
+    select, button {font-size: 1em; padding: 0.5em;}
+    .flash {color: green; margin-bottom: 1em;}
+  </style>
+</head>
+<body>
+  <h1>Diagnostic Mode</h1>
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <div class="flash">{{ messages[0] }}</div>
+    {% endif %}
+  {% endwith %}
+  <form method="post">
+    <label for="category">Select a system to diagnose:</label><br>
+    <select name="category" id="category">
+      {% for cat in categories %}
+        <option value="{{ cat }}">{{ cat }}</option>
+      {% endfor %}
+    </select><br><br>
+    <button type="submit">Run Placeholder AI Agent</button>
+  </form>
+  <br>
+  <a href="{{ url_for('index') }}">&larr; Back to Main Menu</a>
+</body>
+</html>

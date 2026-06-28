@@ -1,0 +1,136 @@
+# Email Assistant — Landing Page Copy
+## For Gemini proofreading & feedback
+
+---
+
+### Navigation
+Logo: ✉ Email Assistant
+Links: How It Works | Features | Pricing | Try Demo | Get Started
+
+---
+
+### Hero Section
+Badge: ⚡ Save 5–10 hours/week on customer emails
+
+Headline: Never Write Another Customer Email
+
+Subhead: AI that reads, understands, and replies to your customers automatically. Works 24/7. Sounds like you. Costs less than coffee per day.
+
+CTAs: [See It in Action →] [View Pricing]
+
+---
+
+### Trust Bar
+Trusted by service businesses like yours
+- Insurance Agents | HVAC Companies | Salons & Spas | Dental Practices | Plumbing Services
+
+---
+
+### Features Section
+Section label: Features
+Heading: Your Inbox, But Better
+Subhead: Email Assistant plugs into your Gmail and handles the busywork so you can focus on the work that actually makes you money.
+
+Feature 1 — Auto-Responds Instantly
+Customer emails get answered in seconds — not hours. Inquiries, complaints, scheduling requests all handled automatically.
+
+Feature 2 — Sounds Like You
+Configure the tone — professional, friendly, or casual. We train it on your business so customers can't tell it's AI.
+
+Feature 3 — You Stay in Control
+Every email is logged. Flag sensitive ones for review. You can disable anytime. Your data never trains public models.
+
+Feature 4 — Smart Intent Detection
+Knows the difference between a price inquiry, a complaint, and a booking request — and responds appropriately to each.
+
+Feature 5 — Handles Scheduling
+Availability checks, appointment confirmations, calendar links — all sent automatically so you never double-book.
+
+Feature 6 — Tracks Everything
+Weekly report: X emails handled, Y hours saved, Z new leads captured. Know exactly what your assistant did for you.
+
+---
+
+### How It Works (Dark Section)
+Section label: How It Works
+Heading: Set Up in 5 Minutes
+Subhead: No technical skills required. We handle everything — you just tell us about your business.
+
+Step 1 — Tell Us About Your Business
+We learn your services, hours, tone, and common customer questions. Takes 5 minutes.
+
+Step 2 — We Connect Your Inbox
+One-time Gmail authorization. Your emails stay private — we read and reply only to customer messages.
+
+Step 3 — You Save Hours Every Week
+Your assistant goes live. Customers get instant replies. You check in once a day and focus on growing.
+
+---
+
+### Testimonial
+"I was drowning in emails from professors asking about coverage. Now my assistant handles 90% of them in under 30 seconds. I got 6 hours of my week back — and booked 3 new policies through auto-responses alone."
+— Carlo, Insurance Agent
+
+---
+
+### Pricing Section
+Section label: Pricing
+Heading: Simple, Transparent, Affordable
+Subhead: One flat monthly fee. No hidden costs. No long-term contracts. Cancel anytime.
+
+Tier 1 — Email Assistant — $49/month
+For small businesses getting started with AI automation.
+Includes:
+- Unlimited incoming emails
+- Smart intent detection
+- Custom tone & branding
+- Weekly performance report
+- Human review queue
+CTA: [Try Free Demo]
+
+Tier 2 — Email + Voice — $149/month ★ MOST POPULAR
+Everything in Email Assistant, plus AI phone answering for your business.
+Includes:
+- Everything in Email Assistant
+- AI voice assistant (24/7)
+- Call forwarding & transcription
+- Appointment booking by voice
+- Voicemail & missed-call follow-up
+CTA: [Get Started]
+
+Tier 3 — Full Stack — $299/month
+The complete package — email, voice, and website chat all in one.
+Includes:
+- Everything in Email + Voice
+- Website live chat widget
+- Lead capture & qualification
+- CRM integration
+- Priority support
+CTA: [Contact Us]
+
+---
+
+### Demo CTA (Dark Section)
+Section label: Try It Right Now
+Heading: See It Work Before You Buy
+Subhead: Send any customer email to our demo assistant and get a response in under 30 seconds. No sign-up required.
+
+Demo email: 📧 demo@emailassistant.io
+Example: "Hi, do you have availability for a service call this week?"
+
+CTA: [Start Your 7-Day Free Trial]
+
+---
+
+### Target Industries
+Section label: Who It's For
+Heading: Built for Service Businesses
+Subhead: If your customers email you to ask questions, book appointments, or request help — Email Assistant is built for you.
+
+Industries: Insurance Agents | Plumbers | Salons & Barbers | HVAC Technicians | Dentists | Electricians | Real Estate Agents | Auto Repair Shops | Landscapers | Photographers
+
+---
+
+### Footer
+© 2026 Email Assistant — AI Email Automation for Small Business
+Questions? gmailassisant4u@gmail.com

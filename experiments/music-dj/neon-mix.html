@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEON MIX // DJ Station</title>
+<style>
+  :root {
+    --bg: #04040a;
+    --panel: #0a0a14;
+    --panel2: #0f0f1f;
+    --neon-cyan: #00f0ff;
+    --neon-magenta: #ff00e5;
+    --neon-purple: #b44aff;
+    --neon-pink: #ff2d95;
+    --neon-yellow: #ffe600;
+    --dim: #2a2a3a;
+    --text: #e0e0f0;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+  html, body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    background-image:
+      radial-gradient(circle at 10% 20%, rgba(0,240,255,0.04) 0%, transparent 40%),
+      radial-gradient(circle at 90% 80%, rgba(255,0,229,0.04) 0%, transparent 40%),
+      radial-gradient(circle at 50% 50%, rgba(180,74,255,0.02) 0%, transparent 60%);
+  }
+  .top-bar {
+    text-align: center;
+    padding: 18px 20px 10px;
+    position: relative;
+  }
+  .top-bar h1 {
+    font-size: 14px;
+    letter-spacing: 0.3em;
+    color: var(--neon-cyan);
+    text-shadow: 0 0 10px var(--neon-cyan), 0 0 30px var(--neon-cyan);
+    text-transform: uppercase;
+  }
+  .top-bar h1 span { color: var(--neon-magenta); text-shadow: 0 0 10px var(--neon-magenta), 0 0 30px var(--neon-magenta); }
+  .stage {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 16px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 16px 20px;
+  }
+  .deck {
+    background: var(--panel);
+    border: 1px solid var(--dim);
+    border-radius: 16px;
+    padding: 18px;
+    position: relative;
+    box-shadow: inset 0 0 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.02);
+  }
+  .deck::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+    opacity: 0.7;
+    box-shadow: 0 0 15px var(--neon-cyan);
+  }
+  .deck.deck-b::before {
+    background: linear-gradient(90deg, transparent, var(--neon-magenta), transparent);
+    box-shadow: 0 0 15px var(--neon-magenta);
+  }
+  .deck-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .deck-label {
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 20px;
+    background: rgba(0,240,255,0.1);
+    border: 1px solid var(--neon-cyan);
+    color: var(--neon-cyan);
+    text-shadow: 0 0 8px var(--neon-cyan);
+  }
+  .deck-b .deck-label {
+    background: rgba(255,0,229,0.1);
+    border: 1px solid var(--neon-magenta);
+    color: var(--neon-magenta);
+    text-shadow: 0 0 8px var(--neon-magenta);
+  }
+  .drop-zone {
+    min-height: 100px;
+    border: 2px dashed var(--dim);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .drop-zone:hover, .drop-zone.drag {
+    border-color: var(--neon-cyan);
+    box-shadow: inset 0 0 30px rgba(0,240,255,0.1), 0 0 20px rgba(0,240,255,0.2);
+  }
+  .deck-b .drop-zone:hover, .deck-b .drop-zone.drag {
+    border-color: var(--neon-magenta);
+    box-shadow: inset 0 0 30px rgba(255,0,229,0.1), 0 0 20px rgba(255,0,229,0.2);
+  }
+  .drop-zone p {
+    font-size: 12px;
+    color: #888;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .waveform {
+    position: absolute;
+    inset: 0;
+    opacity: 0.3;
+  }
+  .track-info {
+    text-align: center;
+    margin-bottom: 12px;
+  }
+  .track-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .track-time {
+    font-family: 'Courier New', monospace;
+    font-size: 20px;
+    color: var(--neon-cyan);
+    text-shadow: 0 0 10px var(--neon-cyan);
+    margin: 8px 0;
+  }
+  .deck-b .track-time {
+    color: var(--neon-magenta);
+    text-shadow: 0 0 10px var(--neon-magenta);
+  }
+  .transport {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .btn {
+    flex: 1;
+    background: var(--panel2);
+    border: 1px solid var(--dim);
+    border-radius: 10px;
+    color: var(--text);
+    padding: 12px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: all 0.1s;
+    text-transform: uppercase;
+  }
+  .btn:hover {
+    background: #1a1a2e;
+    border-color: var(--neon-cyan);
+    color: var(--neon-cyan);
+    box-shadow: 0 0 15px rgba(0,240,255,0.3);
+  }
+  .btn.playing {
+    background: rgba(0,240,255,0.2);
+    border-color: var(--neon-cyan);
+    color: var(--neon-cyan);
+    box-shadow: 0 0 20px rgba(0,240,255,0.4);
+    animation: btnPulse 0.8s infinite alternate;
+  }
+  .deck-b .btn:hover, .deck-b .btn.playing {
+    border-color: var(--neon-magenta);
+    color: var(--neon-magenta);
+    box-shadow: 0 0 15px rgba(255,0,229,0.3);
+  }
+  .deck-b .btn.playing {
+    background: rgba(255,0,229,0.2);
+    box-shadow: 0 0 20px rgba(255,0,229,0.4);
+  }
+  @keyframes btnPulse {
+    from { box-shadow: 0 0 10px currentColor; }
+    to { box-shadow: 0 0 25px currentColor; }
+  }
+  .eq-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .knob-group {
+    text-align: center;
+  }
+  .knob-label {
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: #888;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+  .knob {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: conic-gradient(from 220deg, var(--dim) 0deg, var(--neon-cyan) 140deg, var(--dim) 140deg);
+    border: 2px solid var(--dim);
+    position: relative;
+    cursor: pointer;
+    margin: 0 auto;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.5), 0 0 10px rgba(0,240,255,0.2);
+  }
+  .deck-b .knob {
+    background: conic-gradient(from 220deg, var(--dim) 0deg, var(--neon-magenta) 140deg, var(--dim) 140deg);
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.5), 0 0 10px rgba(255,0,229,0.2);
+  }
+  .knob::after {
+    content: '';
+    position: absolute;
+    top: 6px;
+    left: 50%;
+    width: 2px;
+    height: 10px;
+    background: white;
+    transform: translateX(-50%);
+    box-shadow: 0 0 4px white;
+  }
+  .knob-input {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--dim);
+    outline: none;
+    margin-top: 6px;
+  }
+  .knob-input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--neon-cyan);
+    cursor: pointer;
+    box-shadow: 0 0 10px var(--neon-cyan);
+  }
+  .deck-b .knob-input::-webkit-slider-thumb {
+    background: var(--neon-magenta);
+    box-shadow: 0 0 10px var(--neon-magenta);
+  }
+  .fader-track {
+    -webkit-appearance: none;
+    width: 40px;
+    height: 140px;
+    background: var(--panel2);
+    border-radius: 6px;
+    border: 1px solid var(--dim);
+    writing-mode: bt-lr;
+    outline: none;
+  }
+  .fader-track::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 36px;
+    height: 14px;
+    background: linear-gradient(180deg, #444, #111);
+    border: 1px solid var(--neon-cyan);
+    border-radius: 3px;
+    cursor: pointer;
+    box-shadow: 0 0 10px var(--neon-cyan);
+  }
+  .deck-b .fader-track::-webkit-slider-thumb {
+    border-color: var(--neon-magenta);
+    box-shadow: 0 0 10px var(--neon-magenta);
+  }
+  .volume-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .volume-row label {
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: #888;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+  }
+  .mixer-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    padding-top: 30px;
+  }
+  .crossfader {
+    writing-mode: bt-lr;
+    -webkit-appearance: none;
+    width: 30px;
+    height: 200px;
+    background: var(--panel2);
+    border-radius: 6px;
+    border: 1px solid var(--neon-purple);
+    outline: none;
+  }
+  .crossfader::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 40px;
+    height: 14px;
+    background: linear-gradient(180deg, #666, #222);
+    border: 1px solid var(--neon-purple);
+    border-radius: 3px;
+    cursor: pointer;
+    box-shadow: 0 0 15px var(--neon-purple);
+  }
+  .crossfader-label {
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--neon-purple);
+    text-shadow: 0 0 8px var(--neon-purple);
+  }
+  .master-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .master-fader {
+    writing-mode: bt-lr;
+    -webkit-appearance: none;
+    width: 30px;
+    height: 100px;
+    background: var(--panel2);
+    border-radius: 6px;
+    border: 1px solid var(--neon-yellow);
+    outline: none;
+  }
+  .master-fader::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 40px;
+    height: 14px;
+    background: linear-gradient(180deg, #555, #111);
+    border: 1px solid var(--neon-yellow);
+    border-radius: 3px;
+    cursor: pointer;
+    box-shadow: 0 0 10px var(--neon-yellow);
+  }
+  .master-label {
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--neon-yellow);
+    text-shadow: 0 0 8px var(--neon-yellow);
+  }
+  .fx-row {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+  }
+  .fx-btn {
+    flex: 1;
+    padding: 8px 4px;
+    font-size: 10px;
+    background: var(--panel2);
+    border: 1px solid var(--dim);
+    border-radius: 6px;
+    color: #888;
+    cursor: pointer;
+    transition: all 0.1s;
+    letter-spacing: 0.05em;
+  }
+  .fx-btn.active {
+    border-color: var(--neon-purple);
+    color: var(--neon-purple);
+    box-shadow: 0 0 12px rgba(180,74,255,0.5);
+    text-shadow: 0 0 6px var(--neon-purple);
+  }
+  .bpm-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 10px;
+    padding: 8px;
+    background: var(--panel2);
+    border-radius: 8px;
+    border: 1px solid var(--dim);
+  }
+  .bpm-val {
+    font-family: 'Courier New', monospace;
+    font-size: 22px;
+    font-weight: bold;
+    color: var(--neon-yellow);
+    text-shadow: 0 0 10px var(--neon-yellow);
+  }
+  .bpm-label {
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    color: #888;
+  }
+  .sync-btn {
+    font-size: 10px;
+    padding: 4px 10px;
+    background: transparent;
+    border: 1px solid var(--neon-purple);
+    color: var(--neon-purple);
+    border-radius: 4px;
+    cursor: pointer;
+    letter-spacing: 0.1em;
+  }
+  .visualizer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.6;
+  }
+  .stage::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(ellipse at 50% 50%, transparent 0%, var(--bg) 80%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .stage > * { z-index: 1; position: relative; }
+  @media (max-width: 800px) {
+    .stage {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    .mixer-center {
+      flex-direction: row;
+      padding-top: 0;
+      justify-content: center;
+    }
+    .crossfader { height: 30px; width: 200px; }
+  }
+</style>
+</head>
+<body>
+  <div class="top-bar">
+    <h1>NEON <span>MIX</span> // DJ STATION</h1>
+  </div>
+
+  <div class="stage">
+    <!-- DECK A -->
+    <div class="deck" id="deckA">
+      <div class="deck-header">
+        <div class="deck-label">DECK A</div>
+      </div>
+      <div class="drop-zone" id="dropA">
+        <canvas class="waveform" id="waveA"></canvas>
+        <p>Drop track or click to load</p>
+      </div>
+      <input type="file" id="fileA" accept="audio/*" style="display:none">
+      <div class="track-info">
+        <div class="track-name" id="nameA">No track loaded</div>
+        <div class="track-time"><span id="timeA">0:00</span> / <span id="durA">0:00</span></div>
+      </div>
+      <div class="transport">
+        <button class="btn" id="cueA">CUE</button>
+        <button class="btn" id="playA">PLAY</button>
+      </div>
+      <div class="eq-row">
+        <div class="knob-group">
+          <div class="knob-label">HI</div>
+          <div class="knob" data-param="hi" data-deck="A"></div>
+          <input type="range" class="knob-input" min="0" max="100" value="75" data-param="hi" data-deck="A">
+        </div>
+        <div class="knob-group">
+          <div class="knob-label">MID</div>
+          <div class="knob" data-param="mid" data-deck="A"></div>
+          <input type="range" class="knob-input" min="0" max="100" value="75" data-param="mid" data-deck="A">
+        </div>
+        <div class="knob-group">
+          <div class="knob-label">LOW</div>
+          <div class="knob" data-param="low" data-deck="A"></div>
+          <input type="range" class="knob-input" min="0" max="100" value="75" data-param="low" data-deck="A">
+        </div>
+        <div class="knob-group">
+          <div class="knob-label">FLT</div>
+          <div class="knob" data-param="filter" data-deck="A"></div>
+          <input type="range" class="knob-input" min="0" max="100" value="50" data-param="filter" data-deck="A">
+        </div>
+      </div>
+      <div class="volume-row">
+        <label>VOL</label>
+        <input type="range" class="fader-track" min="0" max="100" value="80" orient="vertical" id="volA">
+      </div>
+    </div>
+
+    <!-- MIXER CENTER -->
+    <div class="mixer-center">
+      <div>
+        <div class="crossfader-label">CROSSFADER</div>
+        <input type="range" class="crossfader" min="0" max="100" value="50" id="crossfader" orient="vertical">
+      </div>
+      <div class="master-row">
+        <div class="master-label">MASTER</div>
+        <input type="range" class="master-fader" min="0" max="100" value="80" orient="vertical" id="master">
+      </div>
+      <canvas class="visualizer" id="viz"></canvas>
+    </div>
+
+    <!-- DECK B -->
+    <div class="deck deck-b" id="deckB">
+      <div class="deck-header">
+        <div class="deck-label">DECK B</div>
+      </div>
+      <div class="drop-zone" id="dropB">
+        <canvas class="waveform" id="waveB"></canvas>
+        <p>Drop track or click to load</p>
+      </div>
+      <input type="file" id="fileB" accept="audio/*" style="display:none">
+      <div class="track-info">
+        <div class="track-name" id="nameB">No track loaded</div>
+        <div class="track-time"><span id="timeB">0:00</span> / <span id="durB">0:00</span></div>
+      </div>
+      <div class="transport">
+        <button class="btn" id="cueB">CUE</button>
+        <button class="btn" id="playB">PLAY</button>
+      </div>
+      <div class="eq-row">
+        <div class="knob-group">
+          <div class="knob-label">HI</div>
+          <div class="knob" data-param="hi" data-deck="B"></div>
+          <input type="range" class="knob-input" min="0" max="100" value="75" data-param="hi" data-deck="B">
+        </div>
+        <div class="knob-group">
+          <div class="knob-label">MID</div>
+          <div class="knob" data-param="mid" data-deck="B"></div>
+          <input type="range" class="knob-input" min="0" max="100" value="75" data-param="mid" data-deck="B">
+        </div>
+        <div class="knob-group">
+          <div class="knob-label">LOW</div>
+          <div class="knob" data-param="low" data-deck="B"></div>
+          <input type="range" class="knob-input" min="0" max="100" value="75" data-param="low" data-deck="B">
+        </div>
+        <div class="knob-group">
+          <div class="knob-label">FLT</div>
+          <div class="knob" data-param="filter" data-deck="B"></div>
+          <input type="range" class="knob-input" min="0" max="100" value="50" data-param="filter" data-deck="B">
+        </div>
+      </div>
+      <div class="volume-row">
+        <label>VOL</label>
+        <input type="range" class="fader-track" min="0" max="100" value="80" orient="vertical" id="volB">
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const decks = {
+      A: { audio: null, source: null, buffer: null, playing: false, startTime: 0, offset: 0, file: null },
+      B: { audio: null, source: null, buffer: null, playing: false, startTime: 0, offset: 0, file: null }
+    };
+
+    // EQ filters per deck
+    const eqs = {};
+    function createEQ(deck) {
+      const input = ctx.createGain();
+      const hi = ctx.createBiquadFilter();
+      hi.type = 'highshelf'; hi.frequency.value = 3000;
+      const mid = ctx.createBiquadFilter();
+      mid.type = 'peaking'; mid.frequency.value = 1000; mid.Q.value = 0.5;
+      const lo = ctx.createBiquadFilter();
+      lo.type = 'lowshelf'; lo.frequency.value = 200;
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'lowpass'; filter.frequency.value = 20000; filter.Q.value = 1;
+
+      input.connect(hi); hi.connect(mid); mid.connect(lo); lo.connect(filter); filter.connect(ctx.destination);
+      eqs[deck] = { input, hi, mid, lo, filter };
+      return input;
+    }
+    const inputA = createEQ('A');
+    const inputB = createEQ('B');
+
+    // State
+    const state = {
+      A: { vol: 0.8, hi: 0.75, mid: 0.75, low: 0.75, filter: 1.0 },
+      B: { vol: 0.8, hi: 0.75, mid: 0.75, low: 0.75, filter: 1.0 }
+    };
+
+    function updateEQ(deck) {
+      const s = state[deck], e = eqs[deck];
+      e.hi.gain.setValueAtTime((s.hi - 0.5) * 2, ctx.currentTime);
+      e.mid.gain.setValueAtTime((s.mid - 0.5) * 2, ctx.currentTime);
+      e.lo.gain.setValueAtTime((s.low - 0.5) * 2, ctx.currentTime);
+      e.filter.frequency.setValueAtTime(200 + s.filter * 20000, ctx.currentTime);
+    }
+
+    function loadTrack(deck, arrayBuffer) {
+      const d = decks[deck];
+      ctx.decodeAudioData(arrayBuffer.slice(0), (buf) => {
+        d.buffer = buf;
+        d.offset = 0;
+        updateTime(deck);
+        document.getElementById('name' + deck).textContent = 'Track loaded — ready';
+      });
+    }
+
+    function play(deck) {
+      const d = decks[deck];
+      if (!d.buffer) return;
+      if (d.playing) { pause(deck); return; }
+      if (ctx.state === 'suspended') ctx.resume();
+      const src = ctx.createBufferSource();
+      src.buffer = d.buffer;
+      src.connect(eqs[deck].input);
+      d.source = src;
+      d.startTime = ctx.currentTime - d.offset;
+      src.start(0, d.offset);
+      d.playing = true;
+      document.getElementById('play' + deck).classList.add('playing');
+      document.getElementById('play' + deck).textContent = 'PAUSE';
+      d.source.onended = () => {
+        if (d.playing) { d.playing = false; d.offset = 0; document.getElementById('play' + deck).classList.remove('playing'); document.getElementById('play' + deck).textContent = 'PLAY'; }
+      };
+    }
+
+    function pause(deck) {
+      const d = decks[deck];
+      if (!d.playing) return;
+      d.offset = ctx.currentTime - d.startTime;
+      d.source.onended = null;
+      d.source.stop();
+      d.source.disconnect();
+      d.playing = false;
+      document.getElementById('play' + deck).classList.remove('playing');
+      document.getElementById('play' + deck).textContent = 'PLAY';
+    }
+
+    function cue(deck) {
+      const d = decks[deck];
+      if (d.playing) pause(deck);
+      d.offset = 0;
+      updateTime(deck);
+    }
+
+    function updateTime(deck) {
+      const d = decks[deck];
+      const el = document.getElementById('time' + deck);
+      const elD = document.getElementById('dur' + deck);
+      if (!d.buffer) { el.textContent = '0:00'; elD.textContent = '0:00'; return; }
+      elD.textContent = formatTime(d.buffer.duration);
+      if (d.playing) {
+        const t = ctx.currentTime - d.startTime;
+        el.textContent = formatTime(t);
+      } else {
+        el.textContent = formatTime(d.offset);
+      }
+    }
+
+    function formatTime(s) {
+      s = Math.max(0, s || 0);
+      const m = Math.floor(s / 60);
+      const sec = Math.floor(s % 60);
+      return m + ':' + (sec < 10 ? '0' : '') + sec;
+    }
+
+    // File loading
+    function setupDrop(deck) {
+      const dz = document.getElementById('drop' + deck);
+      const fi = document.getElementById('file' + deck);
+      dz.addEventListener('click', () => fi.click());
+      dz.addEventListener('dragover', (e) => { e.preventDefault(); dz.classList.add('drag'); });
+      dz.addEventListener('dragleave', () => dz.classList.remove('drag'));
+      dz.addEventListener('drop', (e) => {
+        e.preventDefault(); dz.classList.remove('drag');
+        const f = e.dataTransfer.files[0];
+        if (f) { document.getElementById('name' + deck).textContent = f.name; const r = new FileReader(); r.onload = ev => loadTrack(deck, ev.target.result); r.readAsArrayBuffer(f); }
+      });
+      fi.addEventListener('change', () => {
+        const f = fi.files[0];
+        if (f) { document.getElementById('name' + deck).textContent = f.name; const r = new FileReader(); r.onload = ev => loadTrack(deck, ev.target.result); r.readAsArrayBuffer(f); }
+      });
+    }
+    setupDrop('A'); setupDrop('B');
+
+    // Buttons
+    document.getElementById('playA').addEventListener('click', () => play('A'));
+    document.getElementById('cueA').addEventListener('click', () => cue('A'));
+    document.getElementById('playB').addEventListener('click', () => play('B'));
+    document.getElementById('cueB').addEventListener('click', () => cue('B'));
+
+    // Knobs (drag to rotate)
+    document.querySelectorAll('.knob').forEach(k => {
+      let dragging = false, startY = 0, startVal = 0;
+      const param = k.dataset.param;
+      const deck = k.dataset.deck;
+      k.addEventListener('pointerdown', (e) => {
+        dragging = true;
+        startY = e.clientY;
+        startVal = state[deck][param];
+        k.setPointerCapture(e.pointerId);
+      });
+      window.addEventListener('pointermove', (e) => {
+        if (!dragging) return;
+        const dy = startY - e.clientY;
+        state[deck][param] = Math.max(0, Math.min(1, startVal + dy / 150));
+        document.querySelector('input[type="range"][data-param="' + param + '"][data-deck="' + deck + '"]').value = state[deck][param] * 100;
+        updateEQ(deck);
+        updateKnobRotation(k, state[deck][param]);
+      });
+      window.addEventListener('pointerup', () => { dragging = false; });
+    });
+
+    document.querySelectorAll('.knob-input').forEach(inp => {
+      inp.addEventListener('input', () => {
+        const param = inp.dataset.param;
+        const deck = inp.dataset.deck;
+        state[deck][param] = inp.value / 100;
+        updateEQ(deck);
+        const k = document.querySelector('.knob[data-param="' + param + '"][data-deck="' + deck + '"]');
+        updateKnobRotation(k, state[deck][param]);
+      });
+    });
+
+    function updateKnobRotation(k, val) {
+      const deg = -140 + val * 280;
+      k.style.background = `conic-gradient(from ${deg}deg, var(--dim) 0deg, var(--neon-cyan) 20deg, var(--dim) 20deg)`;
+    }
+
+    // Volume faders
+    const volA = document.getElementById('volA');
+    const volB = document.getElementById('volB');
+    const master = document.getElementById('master');
+    volA.addEventListener('input', () => { state.A.vol = volA.value / 100; eqs.A.input.gain.setValueAtTime(state.A.vol, ctx.currentTime); });
+    volB.addEventListener('input', () => { state.B.vol = volB.value / 100; eqs.B.input.gain.setValueAtTime(state.B.vol, ctx.currentTime); });
+    master.addEventListener('input', () => {
+      const v = master.value / 100;
+      ctx.destination.gain.setValueAtTime(v, ctx.currentTime);
+    });
+    ctx.destination.gain.setValueAtTime(0.8, ctx.currentTime);
+
+    // Crossfader
+    const cf = document.getElementById('crossfader');
+    cf.addEventListener('input', () => {
+      const v = cf.value / 100;
+      const curveA = Math.cos(v * Math.PI / 2);
+      const curveB = Math.sin(v * Math.PI / 2);
+      eqs.A.input.gain.setValueAtTime(state.A.vol * curveA * (decks.A.playing ? 1 : 0.01), ctx.currentTime);
+      eqs.B.input.gain.setValueAtTime(state.B.vol * curveB * (decks.B.playing ? 1 : 0.01), ctx.currentTime);
+    });
+
+    // Visualizer
+    const viz = document.getElementById('viz');
+    const vCtx = viz.getContext('2d');
+    const analyser = ctx.createAnalyser();
+    analyser.fftSize = 256;
+    ctx.destination.connect(analyser);
+    function drawViz() {
+      requestAnimationFrame(drawViz);
+      const data = new Uint8Array(analyser.frequencyBinCount);
+      analyser.getByteFrequencyData(data);
+      vCtx.clearRect(0, 0, viz.width, viz.height);
+      const w = viz.width / data.length;
+      for (let i = 0; i < data.length; i++) {
+        const h = (data[i] / 255) * viz.height;
+        const grad = vCtx.createLinearGradient(0, viz.height - h, 0, viz.height);
+        grad.addColorStop(0, i < data.length/2 ? '#00f0ff' : '#ff00e5');
+        grad.addColorStop(1, 'transparent');
+        vCtx.fillStyle = grad;
+        vCtx.fillRect(i * w, viz.height - h, w * 0.8, h);
+      }
+    }
+    viz.width = window.innerWidth;
+    viz.height = 60;
+    drawViz();
+
+    // Loop update
+    setInterval(() => {
+      updateTime('A');
+      updateTime('B');
+    }, 200);
+
+    // Keyboard
+    window.addEventListener('keydown', (e) => {
+      if (e.key.toLowerCase() === 'q') cue('A');
+      if (e.key.toLowerCase() === 'w') play('A');
+      if (e.key.toLowerCase() === 'o') cue('B');
+      if (e.key.toLowerCase() === 'p') play('B');
+    });
+  </script>
+</body>
+</html>
