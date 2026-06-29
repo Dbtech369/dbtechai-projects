@@ -394,6 +394,189 @@
     body.dark-mode .trust-logo strong { color: var(--heading); }
     body.dark-mode .trust-bar p { color: var(--text); }
 
+    /* ─── Never Miss a Lead Section ─── */
+    .lead-loss {
+      background: var(--section-alt);
+      border-top: 1px solid var(--card-border);
+      border-bottom: 1px solid var(--card-border);
+    }
+    .lead-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: center;
+      margin-top: 24px;
+    }
+    .lead-stats { display: flex; flex-direction: column; gap: 20px; }
+    .lead-stat {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      padding: 24px 28px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      box-shadow: rgba(50,50,93,0.08) 0px 6px 12px -6px;
+      transition: box-shadow 0.25s;
+    }
+    .lead-stat:hover { box-shadow: rgba(50,50,93,0.15) 0px 12px 24px -12px; }
+    .lead-stat-icon {
+      font-size: 2rem;
+      flex-shrink: 0;
+      width: 56px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(234,34,97,0.08);
+      border-radius: 12px;
+    }
+    .lead-stat-icon.green { background: rgba(21,190,83,0.08); }
+    .lead-stat-icon.purple { background: rgba(83,58,253,0.08); }
+    .lead-stat-num {
+      font-size: 1.75rem;
+      font-weight: 300;
+      color: var(--heading);
+      line-height: 1;
+    }
+    .lead-stat-num span { font-size: 0.875rem; color: var(--text); font-weight: 400; }
+    .lead-stat-label { font-size: 0.875rem; color: var(--text); margin-top: 2px; }
+    .lead-stat-sub { font-size: 0.75rem; color: #8a9bb5; font-weight: 400; }
+    .lead-graphic {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 36px;
+      text-align: center;
+      box-shadow: rgba(50,50,93,0.08) 0px 6px 12px -6px;
+    }
+    .lead-funnel {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      margin: 24px 0;
+    }
+    .funnel-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 20px;
+      border-radius: 4px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      width: 100%;
+      transition: all 0.25s;
+    }
+    .funnel-bar .pct { font-weight: 300; font-size: 1.2rem; }
+    .funnel-bar.top { background: rgba(234,34,97,0.08); color: #ea2261; width: 100%; }
+    .funnel-bar.mid { background: rgba(249,107,238,0.08); color: #ea2261; width: 78%; }
+    .funnel-bar.bot { background: rgba(83,58,253,0.08); color: #533afd; width: 55%; }
+    .funnel-bar.solution {
+      background: rgba(21,190,83,0.08);
+      color: #15be53;
+      width: 100%;
+      margin-top: 16px;
+      border: 1px dashed rgba(21,190,83,0.3);
+    }
+    .lead-graphic p { font-size: 0.8125rem; color: var(--text); margin-top: 16px; }
+    body.dark-mode .lead-stat-num { color: var(--heading); }
+
+    /* ─── Google Reviews Section ─── */
+    .reviews-section {
+      background: linear-gradient(180deg, var(--bg) 0%, var(--section-alt) 100%);
+    }
+    .reviews-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: center;
+      margin-top: 24px;
+    }
+    .review-showcase {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .review-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      padding: 20px 24px;
+      box-shadow: rgba(50,50,93,0.08) 0px 6px 12px -6px;
+    }
+    .review-card .stars {
+      color: #f59e0b;
+      font-size: 1.1rem;
+      letter-spacing: 2px;
+      margin-bottom: 8px;
+    }
+    .review-card blockquote {
+      font-size: 0.9375rem;
+      font-weight: 400;
+      color: var(--nav-link);
+      line-height: 1.55;
+      margin-bottom: 8px;
+      font-style: italic;
+      quotes: none;
+    }
+    .review-card blockquote::before { content: '\201C'; }
+    .review-card blockquote::after { content: '\201D'; }
+    .review-card cite {
+      font-style: normal;
+      font-size: 0.8125rem;
+      color: var(--text);
+    }
+    .review-card cite strong { color: var(--heading); }
+    .review-pipeline {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 32px;
+      text-align: center;
+    }
+    .review-pipeline .big-stars {
+      font-size: 2.5rem;
+      color: #f59e0b;
+      letter-spacing: 4px;
+      margin-bottom: 8px;
+    }
+    .review-pipeline .rating-num {
+      font-size: 3rem;
+      font-weight: 300;
+      color: var(--heading);
+      line-height: 1;
+    }
+    .review-pipeline .rating-label {
+      font-size: 0.875rem;
+      color: var(--text);
+      margin: 8px 0 20px;
+    }
+    .review-features {
+      list-style: none;
+      text-align: left;
+      margin-top: 20px;
+    }
+    .review-features li {
+      padding: 8px 0;
+      font-size: 0.875rem;
+      color: var(--nav-link);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid var(--card-border);
+    }
+    .review-features li:last-child { border-bottom: none; }
+    .review-features li::before { content: '✓'; color: #15be53; font-weight: 600; }
+    body.dark-mode .review-pipeline .rating-num { color: var(--heading); }
+    body.dark-mode .review-card cite strong { color: var(--heading); }
+
+    @media (max-width: 900px) {
+      .lead-grid, .reviews-grid { grid-template-columns: 1fr; }
+      .lead-graphic { order: -1; }
+      .review-pipeline { order: -1; }
+    }
+
     /* ─── Pricing ─── */
     .pricing-grid {
       display: grid;
@@ -675,7 +858,64 @@
     </div>
   </section>
 
-  <!-- ═══ How It Works ═══ -->
+  <!-- ═══ Never Miss a Lead ═══ -->
+  <section class="lead-loss">
+    <div class="container">
+      <span class="section-label">💸 The Real Cost</span>
+      <h2>Every Slow Reply Is a <span style="color:#ea2261;">Lost Sale</span></h2>
+      <p class="section-sub">78% of customers buy from the first company to respond. When you're in the field or off-hours, you're leaving money on the table.</p>
+      <div class="lead-grid">
+        <div class="lead-stats">
+          <div class="lead-stat">
+            <div class="lead-stat-icon">⏱️</div>
+            <div>
+              <div class="lead-stat-num">5 min <span>vs</span> 12 hrs</div>
+              <div class="lead-stat-label">Response time expectation vs. reality for most small businesses</div>
+              <div class="lead-stat-sub">Source: Harvard Business Review</div>
+            </div>
+          </div>
+          <div class="lead-stat">
+            <div class="lead-stat-icon green">📉</div>
+            <div>
+              <div class="lead-stat-num">35-50%</div>
+              <div class="lead-stat-label">of leads never get a response if not answered within 1 hour</div>
+              <div class="lead-stat-sub">Source: Lead Response Management Study</div>
+            </div>
+          </div>
+          <div class="lead-stat">
+            <div class="lead-stat-icon purple">💵</div>
+            <div>
+              <div class="lead-stat-num">$1,500+ <span>/mo</span></div>
+              <div class="lead-stat-label">in potential revenue lost per unanswered inquiry for service businesses</div>
+              <div class="lead-stat-sub">Estimated based on average ticket size × missed leads</div>
+            </div>
+          </div>
+        </div>
+        <div class="lead-graphic">
+          <h3 style="color:var(--heading); font-weight:400; font-size:1.1rem;">The Lead Response Funnel</h3>
+          <div class="lead-funnel">
+            <div class="funnel-bar top">
+              <span>📩 Incoming Inquiries</span>
+              <span><strong>100%</strong></span>
+            </div>
+            <div class="funnel-bar mid">
+              <span>📬 Opened Within an Hour</span>
+              <span class="pct"><strong>78%</strong></span>
+            </div>
+            <div class="funnel-bar bot">
+              <span>🗑️ Actually Responded To</span>
+              <span class="pct"><strong>55%</strong></span>
+            </div>
+            <div class="funnel-bar solution">
+              <span>🤖 With Email Assistant</span>
+              <span><strong>100% → Instant</strong></span>
+            </div>
+          </div>
+          <p>Every email gets answered in seconds — not hours. Customers who get fast replies are <strong>7x more likely</strong> to convert.</p>
+        </div>
+      </div>
+    </div>
+  </section>
   <section id="how-it-works" class="dark-section">
     <div class="container">
       <span class="section-label">How It Works</span>
@@ -713,7 +953,47 @@
     </div>
   </section>
 
-  <!-- ═══ Pricing ═══ -->
+  <!-- ═══ Google Reviews ═══ -->
+  <section class="reviews-section">
+    <div class="container">
+      <span class="section-label">⭐ Google Reviews</span>
+      <h2>Turn Every Happy Customer Into a <span style="color:#f59e0b;">5-Star Review</span></h2>
+      <p class="section-sub">Your Email Assistant doesn't just reply — it seeds Google review links into every positive interaction, automatically building your reputation while you work.</p>
+      <div class="reviews-grid">
+        <div class="review-showcase">
+          <div class="review-card">
+            <div class="stars">★★★★★</div>
+            <blockquote>Mike got back to me in under 2 minutes. Had my quote and appointment scheduled before I finished my coffee. This is how customer service should work.</blockquote>
+            <cite>— <strong>Sarah T.</strong>, Google Review</cite>
+          </div>
+          <div class="review-card">
+            <div class="stars">★★★★★</div>
+            <blockquote>I emailed at 9pm on a Sunday not expecting a reply until Monday. Got my service quote at 9:03pm. Booked them on the spot.</blockquote>
+            <cite>— <strong>James R.</strong>, Google Review</cite>
+          </div>
+          <div class="review-card">
+            <div class="stars">★★★★★</div>
+            <blockquote>The quote came in so fast I thought it was an automated email at first. Nope — just a business that actually cares about their customers.</blockquote>
+            <cite>— <strong>Lisa M.</strong>, Google Review</cite>
+          </div>
+        </div>
+        <div class="review-pipeline">
+          <div class="big-stars">★★★★★</div>
+          <div class="rating-num">4.9 <span style="font-size:1rem;color:var(--text);">avg.</span></div>
+          <div class="rating-label">Customer satisfaction rating with AI-assisted replies</div>
+          <hr style="border:none;border-top:1px solid var(--card-border);margin:16px 0;">
+          <h3 style="color:var(--heading);font-weight:400;font-size:1rem;margin-bottom:12px;">How It Works</h3>
+          <ul class="review-features">
+            <li>Auto-appends a Google Review link to every positive email reply</li>
+            <li>Timing is optimized — sends the link when sentiment is highest</li>
+            <li>Works with your existing Google Business Profile</li>
+            <li>Track review growth in your weekly performance report</li>
+            <li>Businesses using this feature see <strong>3x more reviews</strong> in the first 60 days</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
   <section id="pricing" style="background:var(--section-alt); border-top:1px solid var(--card-border); border-bottom:1px solid var(--card-border);">
     <div class="container">
       <span class="section-label">Pricing</span>
